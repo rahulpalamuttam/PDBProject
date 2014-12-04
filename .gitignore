@@ -3,5 +3,4 @@ target/*
 *#
 #*
 .*
-*.gitignore
 run.sh
