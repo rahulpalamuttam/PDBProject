@@ -11,6 +11,8 @@ import java.io.IOException;
 /**
  * This class is used to store the unreleased ID's.
  * The goal is to refactor this to use a hashmap instead
+ * If you want to use it in clustered interface this needs to be fixed!
+ * I NEED TO IMPLEMENT SERIALIZABLE!
  */
 
 public class UnrelID{
