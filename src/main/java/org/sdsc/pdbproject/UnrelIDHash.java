@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * This class is used to store the unreleased ID's
@@ -19,7 +20,7 @@ import java.io.IOException;
  * O(n) time for these - which I do not want for irrelevant IDs.
  */
 
-public class UnrelIDHash {
+public class UnrelIDHash implements Serializable {
     // Private class to eliminate compiler warnings using generics
     private class StringList extends ArrayList<String>{
 	
