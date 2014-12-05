@@ -15,11 +15,17 @@ import java.io.Serializable;
 
 public  class JournalFeatureVector implements Serializable{
     String FileName;
-    ArrayList<String> Id;
     String ContextLine;
-    public JournalFeatureVector(String file, String Context){
+    //Contains a List of ID's
+    ArrayList<String> NegativeIdList;
+    ArrayList<String> PositiveIdList;
+    int RCSB_PDB_occurrences; // number of times "RCSB PDB" occurs in the file
+    int Protein_Data_Bank_count; // number of times "Protein Data Bank" occurs in the file
+    public JournalFeatureVector(int RCSBnum,int P_D_B, String file, String Context, ArrayList<String> NegIds){
+	RCSB_PDB_occurrences = RCSBnum;
+	Protein_Data_Bank_count = P_D_B;
 	FileName = file;
-	Id = null;
+	NegativeIdList = NegIds;
 	ContextLine = Context;
     }
 
@@ -27,8 +33,12 @@ public  class JournalFeatureVector implements Serializable{
 	FileName = file;
     }
 
-    public void changeId(ArrayList<String> idNum){
-	Id = idNum;
+    public void changeNegativeIdList(ArrayList<String> idNum){
+	NegativeIdList = idNum;
+    }
+    
+    public ArrayList<String> getNegativeIdList(){
+	return NegativeIdList;
     }
 
     public void changeContextLine(String line){
@@ -39,9 +49,18 @@ public  class JournalFeatureVector implements Serializable{
 	return ContextLine;
     }
 
+    public int getRCSBCount(){
+	return RCSB_PDB_occurrences;
+    }
+
+    public int getProtein_Data_BankCount(){
+	return Protein_Data_Bank_count;
+    }
+
     public String toString(){
 	StringBuffer output = new StringBuffer();
-	output.append(FileName + "||" + Id + "||" + ContextLine.substring(0, 50));
+	output.append(FileName + "||" + NegativeIdList + "||" + ContextLine.substring(0, 50) +
+		      "||" + RCSB_PDB_occurrences + "||" + Protein_Data_Bank_count);
 	return output.toString();
     }
 }

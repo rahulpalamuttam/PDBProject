@@ -27,7 +27,7 @@ import org.apache.spark.broadcast.*;
 public class RegexpFilter implements Function<JournalFeatureVector, Boolean> {
     private Broadcast<UnrelIDHash> HashVar;
     public RegexpFilter(Broadcast<UnrelIDHash> v){
-	HashVar = v;
+    	HashVar = v;
     }
     public Boolean call(JournalFeatureVector vect){
 	String line = vect.getContextLine();
@@ -44,7 +44,7 @@ public class RegexpFilter implements Function<JournalFeatureVector, Boolean> {
 	    for(String match : matches){
 		if(HashVar.value().contains(match.toUpperCase())) RecordedInvalid.add(match);
 	    }
-	    vect.changeId(RecordedInvalid);
+	    vect.changeNegativeIdList(RecordedInvalid);
 	    if(!RecordedInvalid.isEmpty()) return true;
 	}
 	return false;
