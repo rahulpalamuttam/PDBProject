@@ -10,6 +10,7 @@ import java.io.Serializable;
  * This is a custom class used for creating the feature vectors.
  * It must implement the interface Serializable so that copies of
  * the entire object can be distributed along with its fields.
+ * NOTE: ALL FIELD MEMBERS MUST BE SERIALIZABLE
  */
 
 public  class JournalFeatureVector implements Serializable{
@@ -40,7 +41,7 @@ public  class JournalFeatureVector implements Serializable{
 
     public String toString(){
 	StringBuffer output = new StringBuffer();
-	output.append(FileName + "||" + Id + "||" + ContextLine);
+	output.append(FileName + "||" + Id + "||" + ContextLine.substring(50));
 	return output.toString();
     }
 }
