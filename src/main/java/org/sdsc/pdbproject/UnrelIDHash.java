@@ -16,7 +16,7 @@ import java.io.IOException;
  * Source : http://www.java2s.com/Code/Java/Development-Class/FNVHash.htm
  * The majority of the unlabeled ID's that will be filtered by the regexp
  * Will not be actual unreleased ID's. The List data structure would take
- * O(n) time for these - which I do not want for every single irrelevant ID.
+ * O(n) time for these - which I do not want for irrelevant IDs.
  */
 
 public class UnrelIDHash {

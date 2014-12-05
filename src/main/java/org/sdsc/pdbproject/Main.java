@@ -71,7 +71,20 @@ public class Main
 		    return Arrays.asList(body.split("\n"));
 		}
 	    });
-	
+
+	// Transforms the basic PairRDD<filename, body> to a JavaRDD<Vector{filename,ID,context}>
+	JavaRDD<JournalFeatureVector> fileVector = wholeFile.flatMap(new FlatMapFunction<Tuple2<String, String>, JournalFeatureVector>() {
+		public Iterable<JournalFeatureVector> call(Tuple2<String, String> RDDVect){
+		    List<String> Body = Arrays.asList(RDDVect._2().split("\n"));
+		    JournalFeatureVector[] vect = new JournalFeatureVector[Body.size()];
+		    for(int i = 0; i < vect.length; i++){
+			vect[i] = new JournalFeatureVector(RDDVect._1, Body.get(i));
+		    }
+		    List<JournalFeatureVector> vectList = Arrays.asList(vect);
+		    return vectList;
+		}
+	    }); 
+
 	//Filter RDD<filename, line> ->  RDD<filename, line with invalid ID>
 	// JavaPairRDD<String, String> filtered = fileLines.filter(new Function<Tuple2<String, String>, Boolean>() {
 	// 	public Boolean call(Tuple2<String, String> line){
@@ -93,25 +106,33 @@ public class Main
 	//     });
 
 	JavaPairRDD<String, String> filtered = fileLines.filter(new PairRegexpFilter(varBroad));
+	JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new RegexpFilter(varBroad));
 	// Collects all the key value pairs into a List view
 	List<Tuple2<String, String>> filteredList = filtered.collect();
+	List<JournalFeatureVector> negativeList = negativeVector.collect();
 	// aggregate some countable metrics
 	// number of files
 	long wholeFileCount = wholeFile.count();
 	// number of lines and parititons;
 	long fileLinesCount = fileLines.count();
+	long vectorLinesCount = fileVector.count();
 	long mapSize = filteredList.size();
 	int numOfPartitions = fileLines.splits().size();
 	// number of lines filtered;
 	long filteredCount = filtered.count();
+	long filteredVectorCount = negativeVector.count();
 	
 
 	System.out.println("Number of files: " + wholeFileCount);
 	System.out.println("Number of lines: " + fileLinesCount);
+	System.out.println("Number of line vectors: " + vectorLinesCount);
 	System.out.println("Number of partitions: " + numOfPartitions);
 	System.out.println("Number of filtered lines: " + filteredCount);
+	System.out.println("number of filtered vectors: " + filteredVectorCount);
 	System.out.println("Number of filtered <k,v> pairs: " + mapSize);
+	System.out.println("Number of negative vectors: " + filteredVectorCount);
 	System.out.println(filteredList);
+	System.out.println(negativeList);
 	System.out.println("Hello World!");
 	
     }
