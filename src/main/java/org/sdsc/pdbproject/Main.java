@@ -64,7 +64,7 @@ public class Main
         Broadcast<UnrelIDHash> varBroad = sc.broadcast(HashTable);
 
 	// Loads the text files with RDD<filename, text>
-	JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet);
+	JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet).repartition(50);
 	// Transform RDD<filename, entire body> -> <filename, line>
 	JavaPairRDD<String, String> fileLines = wholeFile.flatMapValues(new Function<String, Iterable<String>>() {
 		public Iterable<String> call(String body){
