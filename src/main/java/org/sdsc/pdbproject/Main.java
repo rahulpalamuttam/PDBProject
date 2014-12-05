@@ -131,8 +131,8 @@ public class Main
 	System.out.println("number of filtered vectors: " + filteredVectorCount);
 	System.out.println("Number of filtered <k,v> pairs: " + mapSize);
 	System.out.println("Number of negative vectors: " + filteredVectorCount);
-	System.out.println(filteredList);
-	System.out.println(negativeList);
+	//System.out.println(filteredList);
+	System.out.println(negativeList.get(1));
 	System.out.println("Hello World!");
 	
     }

@@ -41,7 +41,7 @@ public  class JournalFeatureVector implements Serializable{
 
     public String toString(){
 	StringBuffer output = new StringBuffer();
-	output.append(FileName + "||" + Id + "||" + ContextLine.substring(50));
+	output.append(FileName + "||" + Id + "||" + ContextLine.substring(0, 50));
 	return output.toString();
     }
 }
