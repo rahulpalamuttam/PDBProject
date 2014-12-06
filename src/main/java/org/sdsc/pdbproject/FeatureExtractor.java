@@ -25,8 +25,9 @@ import scala.Tuple2;
  */
 public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>, JournalFeatureVector> {
     private Broadcast<UnrelIDHash> HashVar;
-    public FeatureExtractor(){};
-   public FeatureExtractor(Broadcast<UnrelIDHash> v){
+    public FeatureExtractor(){}
+
+	public FeatureExtractor(Broadcast<UnrelIDHash> v){
 	HashVar = v;
     }
 
