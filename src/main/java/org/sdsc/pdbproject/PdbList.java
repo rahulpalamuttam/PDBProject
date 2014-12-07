@@ -1,25 +1,23 @@
-//Written by Rahul Palamuttam
 package org.sdsc.pdbproject;
 
+import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * This class is used to store the unreleased ID's.
  * The goal is to refactor this to use a hashmap instead
  * If you want to use it in clustered interface this needs to be fixed!
  * I NEED TO IMPLEMENT SERIALIZABLE!
+ *
+ * @author Rahul Palamuttam
  */
 
-public class PdbList {
+public class PdbList implements Serializable {
     private static List<String> IDLIST;
 
     /**
-     * Instantiates a list of unreleased IDs.
+     * Instantiates a list of PDB IDs.
      *
      * @param filename the filename
      */

@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 /**
  * Runs performance tests for comparing
- * a custom hashtable to a list.
+ * a custom HashTable to a list.
  *
  * @author Rahul Palamuttam
  */

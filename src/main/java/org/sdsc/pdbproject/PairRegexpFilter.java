@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import org.apache.spark.api.java.function.*;
 import org.apache.spark.broadcast.*;
 import scala.Tuple2;
-/*
+
+/**
  * A filter class that is to be passed to the JavaRDD.filter() function.
  * It takes a string and returns true if it contains the following
  * regular expression [1-9][a-zA-z0-9]{3}. We make sure to find all the
