@@ -15,56 +15,54 @@ import java.io.IOException;
  * I NEED TO IMPLEMENT SERIALIZABLE!
  */
 
-public class UnrelID{
+public class UnrelID {
     private static List<String> IDLIST;
 
-	/**
-	 * Instantiates a list of unreleased IDs.
-	 *
-	 * @param filename the filename
+    /**
+     * Instantiates a list of unreleased IDs.
+     *
+     * @param filename the filename
      */
-    public UnrelID(String filename){
-	FileReader file = null;
-	BufferedReader reader = null;
-	IDLIST = new ArrayList<String>();
-	try{
-	    file = new FileReader(filename);
-	    reader = new BufferedReader(file);
-	    
-	    reader.readLine();
-	    String line = reader.readLine();
-	    while(line != null){
-		/* Parsing operation goes here */
-		String[] fields = line.split("\",\"");
-		line = reader.readLine();
-		if(fields.length <= 2) continue;
-		else IDLIST.add(fields[1]);
-	    }
-	} catch (FileNotFoundException fne){
-	    System.out.println("MAIN: The file " + filename + "is not found");
-	    IDLIST = null;
-	} catch (IOException ioe){
-	    System.out.println("MAIN: Problem reading file " + filename);
-	    IDLIST = null;
-	}
-	
+    public UnrelID(String filename) {
+        FileReader file;
+        BufferedReader reader;
+        IDLIST = new ArrayList<String>();
+        try {
+            file = new FileReader(filename);
+            reader = new BufferedReader(file);
+
+            reader.readLine();
+            String line = reader.readLine();
+            while (line != null) {
+                String[] fields = line.split("\",\"");
+                line = reader.readLine();
+                if (fields.length > 2) IDLIST.add(fields[1]);
+            }
+        } catch (FileNotFoundException fne) {
+            System.out.println("MAIN: The file " + filename + "is not found");
+            IDLIST = null;
+        } catch (IOException ioe) {
+            System.out.println("MAIN: Problem reading file " + filename);
+            IDLIST = null;
+        }
+
     }
 
-	/**
-	 * Checks if the ID exists in the list
-	 *
-	 * @param element the String to search for
-	 * @return the boolean
+    /**
+     * Checks if the ID exists in the list
+     *
+     * @param element the String to search for
+     * @return the boolean
      */
-	public boolean contains(String element){
-	return IDLIST.contains(element.toUpperCase());
+    public boolean contains(String element) {
+        return IDLIST.contains(element.toUpperCase());
     }
 
-	public String get(int index) {
-		return IDLIST.get(index);
-	}
+    public String get(int index) {
+        return IDLIST.get(index);
+    }
 
-    public int size(){
-	return IDLIST.size();
+    public int size() {
+        return IDLIST.size();
     }
 }
