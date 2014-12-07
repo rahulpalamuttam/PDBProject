@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.Serializable;
 
-/*
- * This is a custom class used for creating the feature vectors.
- * It must implement the interface Serializable so that copies of
- * the entire object can be distributed along with its fields.
- * NOTE: ALL FIELD MEMBERS MUST BE SERIALIZABLE
- */
 
+/**
+ * Custom class that models a feature vector.
+ * It must implement the interface Serializable so that copies
+ * of the entire project can be distributed along with its fields.
+ * NOTE: ALL FIELDS MEMBERS MUST BE SERIALIZABLE
+ *
+ * @author Rahul Palamuttam
+ */
 public  class JournalFeatureVector implements Serializable{
     String FileName;
     String ContextLine;
@@ -21,6 +23,16 @@ public  class JournalFeatureVector implements Serializable{
     ArrayList<String> PositiveIdList;
     int RCSB_PDB_occurrences; // number of times "RCSB PDB" occurs in the file
     int Protein_Data_Bank_count; // number of times "Protein Data Bank" occurs in the file
+
+    /**
+     * Instantiates a new Journal feature vector.
+     *
+     * @param RCSBnum The number of times "RCSB PDB" occurs
+     * @param P_D_B The number of times "Protein Data Bank"
+     * @param file The name of the file
+     * @param Context The line
+     * @param NegIds A list of the Negative ID's
+     */
     public JournalFeatureVector(int RCSBnum,int P_D_B, String file, String Context, ArrayList<String> NegIds){
 	RCSB_PDB_occurrences = RCSBnum;
 	Protein_Data_Bank_count = P_D_B;
@@ -29,30 +41,65 @@ public  class JournalFeatureVector implements Serializable{
 	ContextLine = Context;
     }
 
+    /**
+     * Change file name.
+     *
+     * @param file the file
+     */
     public void changeFileName(String file){
 	FileName = file;
     }
 
+    /**
+     * Change negative id list.
+     *
+     * @param idNum the id num
+     */
     public void changeNegativeIdList(ArrayList<String> idNum){
 	NegativeIdList = idNum;
     }
-    
+
+    /**
+     * Get negative id list.
+     *
+     * @return array list
+     */
     public ArrayList<String> getNegativeIdList(){
 	return NegativeIdList;
     }
 
+    /**
+     * Change context line.
+     *
+     * @param line the line
+     */
     public void changeContextLine(String line){
 	ContextLine = line;
     }
 
+    /**
+     * Get context line.
+     *
+     * @return the string
+     */
     public String getContextLine(){
 	return ContextLine;
     }
 
+    /**
+     * Get rCSB count.
+     *
+     * @return the int
+     */
     public int getRCSBCount(){
 	return RCSB_PDB_occurrences;
     }
 
+    /**
+     * Get protein _ data _ bank count.
+     *
+     * @return the int
+     */
     public int getProtein_Data_BankCount(){
 	return Protein_Data_Bank_count;
     }

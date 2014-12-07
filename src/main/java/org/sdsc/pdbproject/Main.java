@@ -1,69 +1,76 @@
-// Written by Rahul Palamuttam
 package org.sdsc.pdbproject;
 
-/* This is the Main class of the program.
- */
 
-// Java libraries
-import java.io.Serializable;
+
 import java.util.List;
-import java.util.Arrays;
-import java.util.regex.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-//Apache libraries
-import org.apache.commons.collections.map.LinkedMap;
-/* Spark Java programming APIs. It contains the 
+/**
+ * Apache Libraries.
+ * Spark Java programming APIs. It contains the
  * RDD classes used for Java, as well as the
  * StorageLevels and SparkContext for java.
  */
+
 import org.apache.spark.api.java.*;
 
-/* SparkConf provides the configuration for a
+/**
+ * SparkConf provides the configuration for a
  * Spark applications.
  * No run time modifications to SparkConf objects!
  */
 import org.apache.spark.SparkConf;
 
-/* Provides a set of interfaces to represent functions
+/**
+ * Provides a set of interfaces to represent functions
  * in Spark's Java API. Users create implementations of
  * these interfaces to pass functions into methods (such as M&R)
  */
 import org.apache.spark.api.java.function.*;
 
-/* Indicates the storage level. I choose to use the MEM_ONLY */
+/**
+ *  Indicates the storage level. I choose to use the MEM_ONLY
+ */
 import org.apache.spark.storage.StorageLevel;
 
-/* This allows me to cache in objects to nodes */
-import org.apache.spark.broadcast.*;
-// A Tuple of two elements
-import scala.Tuple2;
-
-/*
- * @Arg0 = Input Directory for UNLABELED dataset
- * @Arg2 = Input Directory for Unreleased IDs
+/**
+ * Library for broadcasting objects to nodes
  */
+import org.apache.spark.broadcast.*;
 
+
+/**
+ * The type Main.
+ * @Arg0  = Input Directory for UNLABELED dataset
+ * @Arg2  = Input Directory for Unrelease IDs
+ */
 public class Main 
 {
 
-    /*
-     * A very basic filter class that removes any vector with no NegativeID's
-     * This is going to be removed later.
-     */ 
+	/**
+	 * A basic filter class that filters out Unreleased ID's
+	 * This is going to be removed later
+     */
     public static class NegativeFilter implements Function<JournalFeatureVector, Boolean> {
-	public Boolean call(JournalFeatureVector vect){
+
+		/**
+		 *
+		 * @param vect
+		 * @return
+		 */
+		public Boolean call(JournalFeatureVector vect){
 	    if(vect.getNegativeIdList().size() == 0 || vect.getRCSBCount() == 0){
-		return false;
+			return false;
 	    }
 	    return true;
 	} 
     }
 
-    public static void main(String[] args)
+	/**
+	 * The entry point of application.
+	 *
+	 * @param args the input arguments
+     */
+	public static void main(String[] args)
     {
 	String dataSet = args[0];
 	String fileUnreleased = args[1];

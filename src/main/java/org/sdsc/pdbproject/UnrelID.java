@@ -18,8 +18,10 @@ import java.io.IOException;
 public class UnrelID{
     private static List<String> IDLIST;
 
-    /*
-     * constructor to load unreleased ID's
+	/**
+	 * Instantiates a list of unreleased IDs.
+	 *
+	 * @param filename the filename
      */
     public UnrelID(String filename){
 	FileReader file = null;
@@ -46,9 +48,15 @@ public class UnrelID{
 	    IDLIST = null;
 	}
 	
-    } 
+    }
 
-    public boolean contains(String element){
+	/**
+	 * Checks if the ID exists in the list
+	 *
+	 * @param element the String to search for
+	 * @return the boolean
+     */
+	public boolean contains(String element){
 	return IDLIST.contains(element.toUpperCase());
     }
 

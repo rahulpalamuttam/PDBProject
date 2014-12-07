@@ -12,10 +12,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /*Spark Java programming APIs*/
-
+/**
+ * Spark Java Programming APIs
+ */
 import org.apache.spark.api.java.function.*;
 import org.apache.spark.broadcast.*;
 import scala.Tuple2;
+
+/**
+ * The type Feature extractor.
+ */
 /*
  * The work force of the text mining operations.
  * This class extracts all the features from the file
@@ -25,8 +31,17 @@ import scala.Tuple2;
  */
 public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>, JournalFeatureVector> {
     private Broadcast<UnrelIDHash> HashVar;
-    public FeatureExtractor(){}
 
+	/**
+	 * Instantiates a new Feature extractor.
+     */
+	public FeatureExtractor(){}
+
+	/**
+	 * @ Instantiates a new Feature extractor.
+	 *
+	 * @param v the v
+     */
 	public FeatureExtractor(Broadcast<UnrelIDHash> v){
 	HashVar = v;
     }
@@ -52,7 +67,12 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
 	return vectList;
     }
 
-    // Extracts the Negative ID's from the List
+	/**
+	 * Negative extractor.
+	 * Extracts the Negative ID's from the line.
+	 * @param line the line
+	 * @return the array list of Negative ID's
+     */
     public ArrayList<String> NegativeExtractor(String line){
 	Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
 	Matcher matcher = pattern.matcher(line);
@@ -71,7 +91,12 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
 	return RecordedInvalid;
     }
 
-    //Counts the number of times "RCSB PDB" occurs
+	/**
+	 * Count the number of times "RCSB PDB" occurs
+	 *
+	 * @param body the body
+	 * @return the int
+     */
     public int RCSB_PDB_Counter(String body){
 	int numOfOccurrences = 0;
 	Pattern patter = Pattern.compile("RCSB PDB");
@@ -82,7 +107,13 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
 	return numOfOccurrences;
     }
 
-    //Count the number of times "Protein Data Bank" occurs
+	/**
+	 *
+	 * Count the number of times "Protein Data Bank" occurs
+	 * @param body the body
+	 * @return the int
+     */
+//
     public int Protein_Data_Bank_Counter(String body){
 	int numOfOccurrences = 0;
 	Pattern patter = Pattern.compile("Protein Data Bank");
