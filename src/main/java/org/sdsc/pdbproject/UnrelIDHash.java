@@ -22,21 +22,13 @@ import java.io.Serializable;
 
 public class UnrelIDHash implements Serializable {
 
-    /**
-     * Private class to eliminate compiler warnings using generics
-     */
-    private class StringList extends ArrayList<String> {
-
-    }
-
-    private StringList[] HashTable;
-    private int[] ListSizes;
-    private int HashSize;
     private static final int LARGENUM = 20000000; // 20 million chars
     private static final int MAXLISTSIZE = 500;
     private static final int FNV_32_INIT = 0x811c9dc5;
     private static final int FNV_32_PRIME = 0x01000193;
-
+    private StringList[] HashTable;
+    private int[] ListSizes;
+    private int HashSize;
     /**
      * Constructor to load a new HashTable
      *
@@ -79,22 +71,6 @@ public class UnrelIDHash implements Serializable {
     }
 
     /**
-     * Generates a hash value based on FNV
-     *
-     * @param value the String to be hashed
-     * @return the hashcode
-     */
-    private int HashFunc(String value) {
-        int hash = FNV_32_INIT;
-        final int len = value.length();
-        for (int i = 0; i < len; i++) {
-            hash *= FNV_32_PRIME;
-            hash += value.charAt(i);
-        }
-        return Math.abs(hash % HashSize);
-    }
-
-    /**
      * @param reader Opened file
      * @return the number of lines in the file
      */
@@ -108,6 +84,22 @@ public class UnrelIDHash implements Serializable {
             System.out.println("IO exception with BufferedReader.mark()");
         }
         return lines;
+    }
+
+    /**
+     * Generates a hash value based on FNV
+     *
+     * @param value the String to be hashed
+     * @return the hashcode
+     */
+    private int HashFunc(String value) {
+        int hash = FNV_32_INIT;
+        final int len = value.length();
+        for (int i = 0; i < len; i++) {
+            hash *= FNV_32_PRIME;
+            hash += value.charAt(i);
+        }
+        return Math.abs(hash % HashSize);
     }
 
     /**
@@ -167,9 +159,17 @@ public class UnrelIDHash implements Serializable {
      * @return the boolean
      */
     public boolean contains(String value) {
-        int index = HashFunc(value.toUpperCase());
+        String upperCaseValue = value.toUpperCase();
+        int index = HashFunc(upperCaseValue);
         StringList listAtIndex = HashTable[index];
-        return listAtIndex.contains(value);
+        return listAtIndex.contains(upperCaseValue);
+    }
+
+    /**
+     * Private class to eliminate compiler warnings using generics
+     */
+    private class StringList extends ArrayList<String> {
+
     }
 
 }

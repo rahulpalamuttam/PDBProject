@@ -1,6 +1,7 @@
 package org.sdsc.pdbproject;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -41,7 +42,7 @@ public class UnrelIDHashTest {
 
 
     /**
-     * Check if contains works.
+     * Check if contains is functional.
      */
     @Test
     public void testcontains() {
@@ -51,7 +52,7 @@ public class UnrelIDHashTest {
         Boolean notTrue = TestHash.contains(random);
         Boolean isTrue = TestHash.contains(existing);
         assertFalse(assertString + random + " exists", notTrue);
-        assertTrue(assertString + random + "does not exist", isTrue);
+        assertTrue(assertString + existing + " does not exist", isTrue);
 
     }
 }
