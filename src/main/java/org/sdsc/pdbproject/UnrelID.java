@@ -60,6 +60,10 @@ public class UnrelID{
 	return IDLIST.contains(element.toUpperCase());
     }
 
+	public String get(int index) {
+		return IDLIST.get(index);
+	}
+
     public int size(){
 	return IDLIST.size();
     }

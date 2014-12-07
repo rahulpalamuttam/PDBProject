@@ -7,7 +7,6 @@ import static org.junit.Assert.*;
 /**
  * Runs performance tests for comparing
  * a custom hashtable to a list.
- * of the UnrelIDHash vs the UnrelIDList
  *
  * @author Rahul Palamuttam
  */
@@ -83,7 +82,7 @@ public class ListvsHashTest {
      */
     @Test
     public void FindLast() {
-        String random = "4WM8";
+        String random = TestList.get(TestList.size() - 1);
         long beforeHash = System.nanoTime();
         TestHash.contains(random);
         long afterHash = System.nanoTime();
@@ -102,7 +101,7 @@ public class ListvsHashTest {
      */
     @Test
     public void FindTwoNinety() {
-        String random = "4D1R";
+        String random = TestList.get(290);
         long beforeHash = System.nanoTime();
         TestHash.contains(random);
         long afterHash = System.nanoTime();
