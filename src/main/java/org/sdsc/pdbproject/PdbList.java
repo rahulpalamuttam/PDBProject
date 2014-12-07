@@ -15,7 +15,7 @@ import java.io.IOException;
  * I NEED TO IMPLEMENT SERIALIZABLE!
  */
 
-public class UnrelID {
+public class PdbList {
     private static List<String> IDLIST;
 
     /**
@@ -23,7 +23,7 @@ public class UnrelID {
      *
      * @param filename the filename
      */
-    public UnrelID(String filename) {
+    public PdbList(String filename) {
         FileReader file;
         BufferedReader reader;
         IDLIST = new ArrayList<String>();

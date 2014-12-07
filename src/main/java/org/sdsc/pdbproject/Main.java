@@ -29,7 +29,6 @@ import org.apache.spark.api.java.function.*;
 /**
  *  Indicates the storage level. I choose to use the MEM_ONLY
  */
-import org.apache.spark.storage.StorageLevel;
 
 /**
  * Library for broadcasting objects to nodes
@@ -58,8 +57,8 @@ public class Main {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         // Create and Broadcast the HashTable of unreleased ID's
-        UnrelIDHash HashTable = new UnrelIDHash(fileUnreleased);
-        Broadcast<UnrelIDHash> varBroad = sc.broadcast(HashTable);
+        PdbHashTable HashTable = new PdbHashTable(fileUnreleased);
+        Broadcast<PdbHashTable> varBroad = sc.broadcast(HashTable);
 
         // Loads the text files with RDD<filename, text>
         JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet).repartition(50);
@@ -104,8 +103,7 @@ public class Main {
          * @return whether condition has been met (is it a negative ID)
          */
         public Boolean call(JournalFeatureVector vect) {
-            boolean ret = vect.getNegativeIdList().size() == 0 || vect.getRCSBCount() == 0;
-            return ret;
+            return vect.getNegativeIdList().size() == 0 || vect.getRCSBCount() == 0;
         }
     }
 }

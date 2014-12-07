@@ -6,27 +6,31 @@ import java.util.regex.*;
 import java.util.List;
 import java.util.ArrayList;
 
-/*Spark Java programming APIs*/
+/**
+ * Spark Java programming APIs
+ */
 
 import org.apache.spark.api.java.function.*;
-
 import org.apache.spark.broadcast.*;
 
 /**
  * A filter class that is to be passed to the JavaRDD.filter() function.
- * It takes a string and returns true if it contains the following
- * regular expression. We make sure to find all the matching sequences
+ * It takes a feature vector and returns true if it the line contains a
+ * negative PDB ID. We make sure to find all the matching sequences
  * in a given line. Then it searches for these sequences
  * among all the unreleased IDs.
  *
- * @JournalFeatureVector
+ * @param JournalFeatureVector the feature vector
+ * @param Boolean whether the
  */
 public class RegexpFilter implements Function<JournalFeatureVector, Boolean> {
-    private Broadcast<UnrelIDHash> HashVar;
-    public RegexpFilter(Broadcast<UnrelIDHash> v){
-    	HashVar = v;
-    }
-    public Boolean call(JournalFeatureVector vect){
+	private Broadcast<PdbHashTable> HashVar;
+
+	public RegexpFilter(Broadcast<PdbHashTable> v) {
+		HashVar = v;
+	}
+
+	public Boolean call(JournalFeatureVector vect){
 	String line = vect.getContextLine();
 	Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
 	Matcher matcher = pattern.matcher(line);

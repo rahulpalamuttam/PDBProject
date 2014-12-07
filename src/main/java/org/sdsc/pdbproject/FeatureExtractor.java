@@ -23,11 +23,11 @@ import scala.Tuple2;
  * It maps Tuple2<File, Body> -> JournalFeatureVector<F1,F2,...>
  *
  * @author Rahul Palamuttam
- * @param Tuple2<String  The input to the Mapper consists of file name and body
-* @param JournalFeatureVector the output of the Mapper
+ * @param Tuple2<String:String> The input to the Mapper consists of file name and body
+ * @param JournalFeatureVector the output of the Mapper
  */
 public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>, JournalFeatureVector> {
-    private Broadcast<UnrelIDHash> HashVar;
+    private Broadcast<PdbHashTable> HashVar;
 
     /**
      * Instantiates a new Feature extractor.
@@ -40,7 +40,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      * to look up valid invalid ids.
      * @param BroadcastHash the broadcasted hashtable
      */
-    public FeatureExtractor(Broadcast<UnrelIDHash> BroadcastHash) {
+    public FeatureExtractor(Broadcast<PdbHashTable> BroadcastHash) {
         HashVar = BroadcastHash;
     }
 
@@ -69,8 +69,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         }
 
         // Collect the JournalFeatureVectors into an List
-        List<JournalFeatureVector> vectList = Arrays.asList(vect);
-        return vectList;
+        return Arrays.asList(vect);
     }
 
     /**

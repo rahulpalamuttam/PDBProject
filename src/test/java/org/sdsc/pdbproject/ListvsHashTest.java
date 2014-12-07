@@ -12,8 +12,8 @@ import static org.junit.Assert.*;
  */
 
 public class ListvsHashTest {
-    private static UnrelIDHash TestHash;
-    private static UnrelID TestList;
+    private static PdbHashTable TestHash;
+    private static PdbList TestList;
     public String filename = "unreleasedPDBid.csv";
     public long HashTableCreateTime;
     public long ListCreateTime;
@@ -24,9 +24,9 @@ public class ListvsHashTest {
      */
     public ListvsHashTest() {
         long beforeHash = System.nanoTime();
-        TestHash = new UnrelIDHash(filename);
+        TestHash = new PdbHashTable(filename);
         long afterHash = System.nanoTime();
-        TestList = new UnrelID(filename);
+        TestList = new PdbList(filename);
         long afterList = System.nanoTime();
         HashTableCreateTime = afterHash - beforeHash;
         ListCreateTime = afterList - beforeHash;

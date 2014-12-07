@@ -5,19 +5,19 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Test class for UnrelIDHash table functionality
+ * Test class for PdbHashTable table functionality
  *
  * @author Rahul Palamuttam
  */
-public class UnrelIDHashTest {
+public class PdbHashTest {
     private static String filename = "unreleasedPDBid.csv";
-    private static UnrelIDHash TestHash;
+    private static PdbHashTable TestHash;
 
     /**
      * Instantiates a new Unrel iD hash test.
      */
-    public UnrelIDHashTest() {
-        TestHash = new UnrelIDHash(filename);
+    public PdbHashTest() {
+        TestHash = new PdbHashTable(filename);
     }
 
     /**
@@ -25,7 +25,7 @@ public class UnrelIDHashTest {
      */
     @Test
     public void testcreateUnreleasedHash() {
-        String assertString = "UnrelIDHash was not called: ";
+        String assertString = "PdbHashTable was not called: ";
         assertNotNull(assertString, TestHash);
     }
 
@@ -46,7 +46,7 @@ public class UnrelIDHashTest {
      */
     @Test
     public void testcontains() {
-        String assertString = "UnrelIDHash.testcontains() said: ";
+        String assertString = "PdbHashTable.testcontains() said: ";
         String random = "sdfs";
         String existing = "1ujh";
         Boolean notTrue = TestHash.contains(random);

@@ -24,8 +24,9 @@ import scala.Tuple2;
  * @param Boolean if the line contains an invalid PDB ID
  */
 public class PairRegexpFilter implements Function<Tuple2<String, String>, Boolean> {
-    Broadcast<UnrelIDHash> varBroad;
-    public PairRegexpFilter(Broadcast<UnrelIDHash> var){
+	Broadcast<PdbHashTable> varBroad;
+
+	public PairRegexpFilter(Broadcast<PdbHashTable> var) {
 	varBroad = var;
     }
     public Boolean call(Tuple2<String, String> line){

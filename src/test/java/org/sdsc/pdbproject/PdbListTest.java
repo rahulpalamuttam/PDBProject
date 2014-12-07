@@ -15,25 +15,25 @@ import java.io.IOException;
 /**
  * Test class for the list opeartions
  */
-public class UnrelIDTest {
+public class PdbListTest {
     private static String MAINTEST = "MainTest: ";
     private static String filename = "unreleasedPDBid.csv";
-    private static UnrelID testList;
+    private static PdbList testList;
 
     /**
      * Instantiates a new Unrel iD test.
      */
-    public UnrelIDTest() {
+    public PdbListTest() {
         // a) Check if appropriate file is available
-        testList = new UnrelID(filename);
+        testList = new PdbList(filename);
     }
 
     /**
      * Check if a null object was returned.
      */
     @Test
-    public void testcreateUnreleasedList() {
-        assertNotNull("UnrelID was not called: ", testList);
+    public void testcreatePdbList() {
+        assertNotNull("PdbList was not called: ", testList);
     }
 
     /**

@@ -20,7 +20,7 @@ import java.io.Serializable;
  * @source http://www.java2s.com/Code/Java/Development-Class/FNVHash.htm
  */
 
-public class UnrelIDHash implements Serializable {
+public class PdbHashTable implements Serializable {
 
     private static final int LARGENUM = 20000000; // 20 million chars
     private static final int MAXLISTSIZE = 500;
@@ -29,15 +29,16 @@ public class UnrelIDHash implements Serializable {
     private StringList[] HashTable;
     private int[] ListSizes;
     private int HashSize;
+
     /**
      * Constructor to load a new HashTable
      *
      * @param filename the filename
      */
-    public UnrelIDHash(String filename) {
+    public PdbHashTable(String filename) {
         ListSizes = new int[MAXLISTSIZE];
-        FileReader file = null;
-        BufferedReader reader = null;
+        FileReader file;
+        BufferedReader reader;
         try {
             file = new FileReader(filename);
             reader = new BufferedReader(file);
@@ -53,18 +54,16 @@ public class UnrelIDHash implements Serializable {
             while (line != null) {
                 String[] fields = line.split("\",\"");
                 line = reader.readLine();
-                if (fields.length <= 2) {
-                    continue;
-                } else {
+                if (fields.length > 2) {
                     StringList list = HashTable[HashFunc(fields[1])];
                     list.add(fields[1]);
                 }
             }
         } catch (FileNotFoundException fne) {
-            System.out.println("UnrelIDHash: The file " + filename + "is not found");
+            System.out.println("PdbHashTable: The file " + filename + "is not found");
             HashTable = null;
         } catch (IOException ioe) {
-            System.out.println("UnrelIDHash: Problem reading file " + filename);
+            System.out.println("PdbHashTable: Problem reading file " + filename);
             HashTable = null;
         }
         loadListSizes();
@@ -139,13 +138,14 @@ public class UnrelIDHash implements Serializable {
     /**
      * Prints the entire table by printing the list at each index.
      *
-     * @return
+     * @return return the printed table
      */
-    public String printTable() {
+    public String printHashTable() {
         StringBuffer output = new StringBuffer();
         for (int i = 0; i < HashSize; i++) {
             if (HashTable[i].size() > 0) {
-                output.append(i + ": " + HashTable[i] + "\n");
+                String line = i + ": " + HashTable[i] + "\n";
+                output.append(line);
             }
         }
         return output.toString();
