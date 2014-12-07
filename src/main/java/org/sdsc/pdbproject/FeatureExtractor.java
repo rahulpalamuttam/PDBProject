@@ -23,9 +23,8 @@ import scala.Tuple2;
  * It maps Tuple2<File, Body> -> JournalFeatureVector<F1,F2,...>
  *
  * @author Rahul Palamuttam
- *
- * @param Tuple2<String, String> The input to the Mapper consists of file name and body
- * @param JournalFeatureVector the output of the Mapper
+ * @param Tuple2<String  The input to the Mapper consists of file name and body
+* @param JournalFeatureVector the output of the Mapper
  */
 public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>, JournalFeatureVector> {
     private Broadcast<UnrelIDHash> HashVar;

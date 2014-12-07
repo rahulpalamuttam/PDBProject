@@ -1,6 +1,5 @@
 package org.sdsc.pdbproject;
 
-// Java libraries
 import java.util.regex.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import scala.Tuple2;
  * @author Rahul Palamuttam
  *
  * @param Tuple2<String, String> element from a JavaPairRDD <file, line>
- *
  * @param Boolean if the line contains an invalid PDB ID
  */
 public class PairRegexpFilter implements Function<Tuple2<String, String>, Boolean> {

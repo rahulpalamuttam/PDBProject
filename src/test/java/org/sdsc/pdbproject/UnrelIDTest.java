@@ -1,7 +1,4 @@
-//Written by Rahul Palamuttam
 package org.sdsc.pdbproject;
-
-//Test framework packages
 
 import org.junit.Test;
 
@@ -15,23 +12,33 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * Test class for the list opeartions
+ */
 public class UnrelIDTest {
     private static String MAINTEST = "MainTest: ";
     private static String filename = "unreleasedPDBid.csv";
     private static UnrelID testList;
 
+    /**
+     * Instantiates a new Unrel iD test.
+     */
     public UnrelIDTest() {
         // a) Check if appropriate file is available
         testList = new UnrelID(filename);
     }
 
-    // Check if a null object was returned.
+    /**
+     * Check if a null object was returned.
+     */
     @Test
     public void testcreateUnreleasedList() {
         assertNotNull("UnrelID was not called: ", testList);
     }
 
-    // Check if the sizes of list = lines in file - 1.
+    /**
+     * Check if the size of list = lines in file - 1
+     */
     @Test
     public void testsize() {
         // check if line count matches ID count

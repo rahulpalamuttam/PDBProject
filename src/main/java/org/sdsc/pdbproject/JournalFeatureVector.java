@@ -16,12 +16,30 @@ import java.io.Serializable;
  * @author Rahul Palamuttam
  */
 public  class JournalFeatureVector implements Serializable{
+    /**
+     * The File name.
+     */
     String FileName;
+    /**
+     * The Context line.
+     */
     String ContextLine;
-    //Contains a List of ID's
+    /**
+     * The Negative id list.
+     */
+//Contains a List of ID's
     ArrayList<String> NegativeIdList;
+    /**
+     * The Positive id list.
+     */
     ArrayList<String> PositiveIdList;
+    /**
+     * The RCSB _ pDB _ occurrences.
+     */
     int RCSB_PDB_occurrences; // number of times "RCSB PDB" occurs in the file
+    /**
+     * The Protein _ data _ bank _ count.
+     */
     int Protein_Data_Bank_count; // number of times "Protein Data Bank" occurs in the file
 
     /**
