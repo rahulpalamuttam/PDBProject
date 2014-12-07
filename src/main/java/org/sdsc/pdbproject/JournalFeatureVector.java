@@ -1,4 +1,3 @@
-//Written by Rahul Palamuttam
 package org.sdsc.pdbproject;
 
 import java.lang.StringBuffer;
@@ -124,7 +123,7 @@ public  class JournalFeatureVector implements Serializable{
 
     public String toString(){
 	StringBuffer output = new StringBuffer();
-	output.append(FileName + "||" + NegativeIdList + "||" + ContextLine.substring(0, 50) +
+	output.append(FileName + "||" + NegativeIdList + "||" + ContextLine.substring(0, 1) +
 		      "||" + RCSB_PDB_occurrences + "||" + Protein_Data_Bank_count);
 	return output.toString();
     }
