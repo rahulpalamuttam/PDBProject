@@ -1,7 +1,6 @@
 package org.sdsc.pdbproject;
 
 
-
 import java.util.List;
 
 /**
@@ -40,78 +39,71 @@ import org.apache.spark.broadcast.*;
 
 /**
  * The type Main.
- * @Arg0  = Input Directory for UNLABELED dataset
- * @Arg2  = Input Directory for Unrelease IDs
  */
-public class Main 
-{
+public class Main {
 
-	/**
-	 * A basic filter class that filters out Unreleased ID's
-	 * This is going to be removed later
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
+    public static void main(String[] args) {
+        String dataSet = args[0];
+        String fileUnreleased = args[1];
+
+        // The default 2 line structure for spark programs
+        SparkConf conf = new SparkConf().setAppName("pdbproject");
+        JavaSparkContext sc = new JavaSparkContext(conf);
+
+        // Create and Broadcast the HashTable of unreleased ID's
+        UnrelIDHash HashTable = new UnrelIDHash(fileUnreleased);
+        Broadcast<UnrelIDHash> varBroad = sc.broadcast(HashTable);
+
+        // Loads the text files with RDD<filename, text>
+        JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet).repartition(50);
+
+        // Transforms the basic PairRDD<filename, body> to a JavaRDD<Vector{filename,ID,context}>
+        JavaRDD<JournalFeatureVector> fileVector = wholeFile.flatMap(new FeatureExtractor(varBroad));
+
+        JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
+
+        // Collects all the key value pairs into a List view
+        List<JournalFeatureVector> negativeList = negativeVector.collect();
+
+        // aggregate some countable metrics
+        // number of files
+        long wholeFileCount = wholeFile.count();
+        // number of lines and parititons;
+        long vectorLinesCount = fileVector.count();
+        int numOfPartitions = fileVector.partitions().size();
+        // number of lines filtered
+        long filteredVectorCount = negativeVector.count();
+
+        for (JournalFeatureVector n : negativeList) {
+            System.out.println(n);
+        }
+        System.out.println("Number of files: " + wholeFileCount);
+        System.out.println("Number of line vectors: " + vectorLinesCount);
+        System.out.println("Number of partitions: " + numOfPartitions);
+        System.out.println("Number of negative vectors: " + filteredVectorCount);
+
+        System.out.println("Hello World!");
+
+    }
+
+    /**
+     * A basic filter class that filters out Unreleased ID's
+     * This is going to be removed later
      */
     public static class NegativeFilter implements Function<JournalFeatureVector, Boolean> {
 
-		/**
-		 *
-		 * @param vect
-		 * @return
-		 */
-		public Boolean call(JournalFeatureVector vect){
-	    if(vect.getNegativeIdList().size() == 0 || vect.getRCSBCount() == 0){
-			return false;
-	    }
-	    return true;
-	} 
-    }
-
-	/**
-	 * The entry point of application.
-	 *
-	 * @param args the input arguments
-     */
-	public static void main(String[] args)
-    {
-	String dataSet = args[0];
-	String fileUnreleased = args[1];
-
-	// The default 2 line structure for spark programs
-	SparkConf conf = new SparkConf().setAppName("pdbproject");
-	JavaSparkContext sc = new JavaSparkContext(conf);
-
-	// Create and Broadcast the HashTable of unreleased ID's
-	UnrelIDHash HashTable = new UnrelIDHash(fileUnreleased);
-        Broadcast<UnrelIDHash> varBroad = sc.broadcast(HashTable);
-
-	// Loads the text files with RDD<filename, text>
-	JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet).repartition(50);
-
-	// Transforms the basic PairRDD<filename, body> to a JavaRDD<Vector{filename,ID,context}>
-	JavaRDD<JournalFeatureVector> fileVector = wholeFile.flatMap(new FeatureExtractor(varBroad));
-
-	JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
-	
-	// Collects all the key value pairs into a List view
-	List<JournalFeatureVector> negativeList = negativeVector.collect();
-	
-	// aggregate some countable metrics
-	// number of files
-	long wholeFileCount = wholeFile.count();
-	// number of lines and parititons;
-	long vectorLinesCount = fileVector.count();
-	int numOfPartitions = fileVector.splits().size();
-	// number of lines filtered
-	long filteredVectorCount = negativeVector.count();
-	
-	for(JournalFeatureVector n : negativeList){
-	    System.out.println(n);
-	}
-	System.out.println("Number of files: " + wholeFileCount);
-	System.out.println("Number of line vectors: " + vectorLinesCount);
-	System.out.println("Number of partitions: " + numOfPartitions);
-	System.out.println("Number of negative vectors: " + filteredVectorCount);
-	
-	System.out.println("Hello World!");
-	
+        /**
+         * @param vect a feature vector to run some queries against
+         * @return whether condition has been met (is it a negative ID)
+         */
+        public Boolean call(JournalFeatureVector vect) {
+            boolean ret = vect.getNegativeIdList().size() == 0 || vect.getRCSBCount() == 0;
+            return ret;
+        }
     }
 }
