@@ -38,7 +38,9 @@ import org.apache.spark.broadcast.*;
 
 
 /**
- * The type Main.
+ * The Main class
+ * This is a Spark application that searches through
+ * journal articles for PDB IDs.
  */
 public class Main {
 

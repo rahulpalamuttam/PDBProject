@@ -1,16 +1,13 @@
-// Written by Rahul Palamuttam
 package org.sdsc.pdbproject;
-/*
-  This is the Regular Expression Filter Function class.
-*/
 
 // Java libraries
-import java.util.HashSet;
 import java.util.regex.*;
 import java.util.List;
 import java.util.ArrayList;
 
-/*Spark Java programming APIs*/
+/**
+ * Spark Java programming Libraries
+ */
 
 import org.apache.spark.api.java.function.*;
 import org.apache.spark.broadcast.*;
@@ -18,9 +15,15 @@ import scala.Tuple2;
 /*
  * A filter class that is to be passed to the JavaRDD.filter() function.
  * It takes a string and returns true if it contains the following
- * regular expression. We make sure to find all the matching sequences
- * in a given line. Then it searches for these sequences
- * amoung all the unreleased IDs. 
+ * regular expression [1-9][a-zA-z0-9]{3}. We make sure to find all the
+ * matching sequences in a given line. Then it searches for these sequences
+ * among all the unreleased IDs.
+ *
+ * @author Rahul Palamuttam
+ *
+ * @param Tuple2<String, String> element from a JavaPairRDD <file, line>
+ *
+ * @param Boolean if the line contains an invalid PDB ID
  */
 public class PairRegexpFilter implements Function<Tuple2<String, String>, Boolean> {
     Broadcast<UnrelIDHash> varBroad;
