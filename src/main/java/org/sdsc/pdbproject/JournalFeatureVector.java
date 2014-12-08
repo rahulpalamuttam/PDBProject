@@ -1,4 +1,3 @@
-//Written by Rahul Palamuttam
 package org.sdsc.pdbproject;
 
 import java.lang.StringBuffer;
@@ -27,7 +26,6 @@ public  class JournalFeatureVector implements Serializable{
     /**
      * The Negative id list.
      */
-//Contains a List of ID's
     ArrayList<String> NegativeIdList;
     /**
      * The Positive id list.

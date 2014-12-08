@@ -14,7 +14,8 @@ import java.io.Serializable;
  * variables from the java2s site. The majority of the unlabeled ID's that will be
  * filtered by the regexp will not be actual unreleased ID's. The List data structure
  * would take O(n) time to determine the irrelevant ID's. Run the ListvsHashTest to see
- * the performance gains for yourself!
+ * the performance gains for yourself! Note that I use nanotime and not a serious java
+ * performance analyzer.
  *
  * @author Rahul Palamuttam
  * @source http://www.java2s.com/Code/Java/Development-Class/FNVHash.htm

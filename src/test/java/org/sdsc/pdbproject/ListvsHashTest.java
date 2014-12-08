@@ -60,7 +60,7 @@ public class ListvsHashTest {
      */
     @Test
     public void FindFirst() {
-        String random = "1uJh";
+        String random = TestList.get(0);
         long beforeHash = System.nanoTime();
         TestHash.contains(random);
         long afterHash = System.nanoTime();
