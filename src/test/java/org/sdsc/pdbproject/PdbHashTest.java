@@ -10,14 +10,29 @@ import static org.junit.Assert.*;
  * @author Rahul Palamuttam
  */
 public class PdbHashTest {
-    private static String filename = "unreleasedPDBid.csv";
     private static PdbHashTable TestHash;
-
+    private String RANDOM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     /**
      * Instantiates a new Unrel iD hash test.
      */
     public PdbHashTest() {
-        TestHash = new PdbHashTable(filename);
+        //PdbIdSourceDownloader downloader = new PdbIdSourceDownloader();
+        //TestHash = downloader.getPdbHashTable();
+        TestHash = new PdbHashTable(700000);
+        //random String generation
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 36; j++) {
+                for (int k = 0; k < 36; k++) {
+                    for (int l = 0; l < 36; l++) {
+                        String a = "" + i;
+                        String b = RANDOM.substring(j, j + 1);
+                        String c = RANDOM.substring(k, k + 1);
+                        String d = RANDOM.substring(l, l + 1);
+                        TestHash.put(a + b + c + d, null, null);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -48,12 +63,13 @@ public class PdbHashTest {
     public void testcontains() {
         String assertString = "PdbHashTable.testcontains() said: ";
         String random = "sdfs";
-        String existing = "1ujh";
+        String existing = "5fsd";
         Boolean notTrue = TestHash.contains(random);
         Boolean isTrue = TestHash.contains(existing);
-        assertFalse(assertString + random + " exists", notTrue);
-        assertTrue(assertString + existing + " does not exist", isTrue);
+        assertFalse(assertString + random + " does not exist", notTrue);
+        assertTrue(assertString + existing + " does exist", isTrue);
 
     }
+
 
 }
