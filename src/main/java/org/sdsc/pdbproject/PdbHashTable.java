@@ -2,11 +2,8 @@ package org.sdsc.pdbproject;
 
 import java.lang.StringBuffer;
 import java.util.ArrayList;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * HashTable for storing PDB ID's. It implements Serializable for broadcasting purposes.
@@ -14,82 +11,79 @@ import java.io.Serializable;
  * variables from the java2s site. The majority of the unlabeled ID's that will be
  * filtered by the regexp will not be actual unreleased ID's. The List data structure
  * would take O(n) time to determine the irrelevant ID's. Run the ListvsHashTest to see
- * the performance gains for yourself!
+ * the performance gains for yourself! Note that I use nanotime and not a serious java
+ * performance analyzer.
  *
  * @author Rahul Palamuttam
  * @source http://www.java2s.com/Code/Java/Development-Class/FNVHash.htm
  */
 
 public class PdbHashTable implements Serializable {
-
-    private static final int LARGENUM = 20000000; // 20 million chars
     private static final int MAXLISTSIZE = 500;
     private static final int FNV_32_INIT = 0x811c9dc5;
     private static final int FNV_32_PRIME = 0x01000193;
-    private StringList[] HashTable;
+    private PdbIdList[] HashTable;
     private int[] ListSizes;
     private int HashSize;
 
     /**
      * Constructor to load a new HashTable
      *
-     * @param filename the filename
+     * @param size the size
      */
-    public PdbHashTable(String filename) {
+    public PdbHashTable(int size) {
         ListSizes = new int[MAXLISTSIZE];
-        FileReader file;
-        BufferedReader reader;
-        try {
-            file = new FileReader(filename);
-            reader = new BufferedReader(file);
-
-            // init the array and each of the lists
-            HashSize = getFileSize(reader) * 2;
-            HashTable = new StringList[HashSize];
-            for (int i = 0; i < HashSize; i++) HashTable[i] = new StringList();
-
-            //Read and add
-            reader.readLine();
-            String line = reader.readLine();
-            while (line != null) {
-                String[] fields = line.split("\",\"");
-                line = reader.readLine();
-                if (fields.length > 2) {
-                    StringList list = HashTable[HashFunc(fields[1])];
-                    list.add(fields[1]);
-                }
-            }
-        } catch (FileNotFoundException fne) {
-            System.out.println("PdbHashTable: The file " + filename + "is not found");
-            HashTable = null;
-        } catch (IOException ioe) {
-            System.out.println("PdbHashTable: Problem reading file " + filename);
-            HashTable = null;
-        }
-        loadListSizes();
+        // init the array and each of the lists
+        HashSize = size * 5;
+        ListSizes[0] = HashSize;
+        HashTable = new PdbIdList[HashSize];
+        for (int i = 0; i < HashSize; i++) HashTable[i] = new PdbIdList();
     }
 
     /**
-     * @param reader Opened file
-     * @return the number of lines in the file
+     * Construct a PdbId and put it in.
+     *
+     * @param id   the id
+     * @param doi  the doi
+     * @param date the date
      */
-    private static int getFileSize(BufferedReader reader) {
-        int lines = 0;
-        try {
-            reader.mark(LARGENUM); // 20m chars can be read
-            while (reader.readLine() != null) lines++;
-            reader.reset();
-        } catch (IOException IO) {
-            System.out.println("IO exception with BufferedReader.mark()");
-        }
-        return lines;
+    public void put(String id, String doi, Date date) {
+        PdbId Pdbid = new PdbId(id, doi, date);
+        put(Pdbid);
+    }
+
+    /**
+     * Put a PdbId
+     *
+     * @param id the id
+     */
+    public void put(PdbId id) {
+        int Hashcode = HashFunc(id);
+        PdbIdList indexList = HashTable[Hashcode];
+        // update list size
+        int listsize = indexList.size();
+        ListSizes[listsize]--;
+        ListSizes[listsize + 1]++;
+        // insert
+        indexList.add(id);
     }
 
     /**
      * Generates a hash value based on FNV
      *
-     * @param value the String to be hashed
+     * @param id the PdbId to be hashed
      * @return the hashcode
+     */
+    private int HashFunc(PdbId id) {
+        return HashFunc(id.IdName());
+
+    }
+
+    /**
+     * Overloaded/helper method that
+     *
+     * @param value String to be hashed
+     * @return the hashed value
      */
     private int HashFunc(String value) {
         int hash = FNV_32_INIT;
@@ -101,25 +95,7 @@ public class PdbHashTable implements Serializable {
         return Math.abs(hash % HashSize);
     }
 
-    /**
-     * Loads the respective sizes of the Lists in the HashTable
-     */
-    private void loadListSizes() {
-        for (StringList s : HashTable) {
-            ListSizes[s.size()]++;
-        }
-    }
 
-    /**
-     * Put void.
-     *
-     * @param value the value
-     */
-    public void put(String value) {
-        int index = HashFunc(value);
-        StringList listAtIndex = HashTable[index];
-        listAtIndex.add(value);
-    }
 
     /**
      * prints the HashTable list sizes (where values are assigned)
@@ -161,15 +137,25 @@ public class PdbHashTable implements Serializable {
     public boolean contains(String value) {
         String upperCaseValue = value.toUpperCase();
         int index = HashFunc(upperCaseValue);
-        StringList listAtIndex = HashTable[index];
+        PdbIdList listAtIndex = HashTable[index];
         return listAtIndex.contains(upperCaseValue);
     }
 
     /**
      * Private class to eliminate compiler warnings using generics
      */
-    private class StringList extends ArrayList<String> {
-
+    private class PdbIdList extends ArrayList<PdbId> {
+        /**
+         * Overrides the contains function of ArrayList.
+         * Compares PdbId strings
+         *
+         * @param value the PdbId to compare to
+         */
+        public boolean contains(String value) {
+            for (PdbId i : this) {
+                if (i.IdName().equals(value)) return true;
+            }
+            return false;
+        }
     }
-
 }

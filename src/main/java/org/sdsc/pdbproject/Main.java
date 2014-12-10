@@ -50,14 +50,14 @@ public class Main {
      */
     public static void main(String[] args) {
         String dataSet = args[0];
-        String fileUnreleased = args[1];
 
         // The default 2 line structure for spark programs
         SparkConf conf = new SparkConf().setAppName("pdbproject");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         // Create and Broadcast the HashTable of unreleased ID's
-        PdbHashTable HashTable = new PdbHashTable(fileUnreleased);
+        PdbIdSourceDownloader downloader = new PdbIdSourceDownloader();
+        PdbHashTable HashTable = PdbIdSourceDownloader.getPdbHashTable();
         Broadcast<PdbHashTable> varBroad = sc.broadcast(HashTable);
 
         // Loads the text files with RDD<filename, text>
