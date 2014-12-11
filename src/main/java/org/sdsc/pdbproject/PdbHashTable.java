@@ -185,9 +185,10 @@ public class PdbHashTable implements Serializable {
          * @return the int
          */
         public int indexOf(String value) {
+	    String upperCaseValue = value.toUpperCase();
             int length = this.size() - 1;
-            for (; length > 0; length--) {
-                if (this.get(length).IdName().equals(value)) break;
+            for (; length > -1; length--) {
+                if (this.get(length).IdName().equals(upperCaseValue)) break;
             }
             return length;
         }

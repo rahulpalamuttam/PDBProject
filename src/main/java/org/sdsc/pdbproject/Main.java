@@ -103,7 +103,7 @@ public class Main {
          * @return whether condition has been met (is it a negative ID)
          */
         public Boolean call(JournalFeatureVector vect) {
-            return vect.getNegativeIdList().size() == 0 || vect.getRCSBCount() == 0;
+            return vect.getNegativeIdList().size() > 0;
         }
     }
 }
