@@ -4,10 +4,8 @@ package org.sdsc.pdbproject;
  * Java libraries
  */
 
+import java.util.*;
 import java.util.regex.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Spark Programming Libraries
@@ -82,7 +80,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
     public ArrayList<String> NegativeExtractor(String line) {
         Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
         Matcher matcher = pattern.matcher(line);
-        List<String> matches = new ArrayList<String>();
+        Set<String> matches = new HashSet<String>();
         // records all the matching sequences in the line
         while (matcher.find()) {
             matches.add(matcher.group());
@@ -91,7 +89,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         if (!matches.isEmpty()) {
             // Hash it is important to have the smaller array iterated over first
             for (String match : matches) {
-                if (HashVar.value().contains(match.toUpperCase())) RecordedInvalid.add(match);
+                if (HashVar.value().isNotReleased(match)) RecordedInvalid.add(match);
             }
         }
         return RecordedInvalid;
