@@ -1,5 +1,5 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.sdsc.pdbproject</groupId>
   <artifactId>pdbproj</artifactId>
@@ -18,6 +18,50 @@
       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </repository>
   </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+    	<configuration>
+	  <artifactSet>
+	    <includes>
+	      <include>com.jcabi:*</include>
+	      <include>org.sdsc:*</include>
+	      <include>org.aspectj:*</include>
+	      <include>javax.validation:*</include>
+	    </includes>
+	    <!-- <excludes> -->
+	    <!--   <exclude>*</exclude> -->
+	    <!-- </excludes> -->
+	  </artifactSet>
+    	  <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+		<exclude>META_INF/*</exclude>
+    	  	<exclude>scala/*</exclude>
+              </excludes>
+            </filter>
+    	  </filters>
+    	  <!-- <minimizeJar>true</minimizeJar> -->
+    	</configuration>
+      </plugin>
+    </plugins>
+  </build>
 
   <dependencies>
     <dependency>
@@ -46,11 +90,11 @@
       <artifactId>jcabi-xml</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>com.jcabi</groupId>
-      <artifactId>jcabi-aspects</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
+    <!-- <dependency> -->
+    <!--   <groupId>com.jcabi</groupId> -->
+    <!--   <artifactId>jcabi-aspects</artifactId> -->
+    <!--   <version>1.0-SNAPSHOT</version> -->
+    <!-- </dependency> -->
   </dependencies>
 
 </project>
