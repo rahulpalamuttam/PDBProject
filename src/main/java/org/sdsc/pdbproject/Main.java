@@ -70,7 +70,7 @@ public class Main {
 
 	JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
 	
-	Word2Vec featuration = new Word2Vec();
+	Word2Vec featuration = new Word2Vec().setVectorSize(1);
 	JavaRDD<ArrayList<String>> words = negativeVector.map(new Function<JournalFeatureVector, ArrayList<String>>(){
 		public ArrayList<String> call(JournalFeatureVector vect){
 		    String[] array = vect.getContext().split(" ");
@@ -82,11 +82,13 @@ public class Main {
 		}
 	    });
 	
-	HashingTF  hashingTF = new HashingTF();
-	JavaRDD<Vector> tf = hashingTF.transform(words);
+	
+	Word2VecModel mod = featuration.fit(words);
+
+		   
 	// Collects all the key value pairs into a List view
 	List<JournalFeatureVector> negativeList = negativeVector.collect();
-	List<Vector> tfout = tf.collect();
+	
 	// aggregate some countable metrics
 	// number of files
 	long wholeFileCount = wholeFile.count();
@@ -96,7 +98,7 @@ public class Main {
 	// number of lines filtered
 	long filteredVectorCount = negativeVector.count();
 
-	System.out.println(tfout.get(1));
+	
 	for (JournalFeatureVector n : negativeList) {
 	    System.out.println(n);
 	}
@@ -104,7 +106,9 @@ public class Main {
 	System.out.println("Number of line vectors: " + vectorLinesCount);
 	System.out.println("Number of partitions: " + numOfPartitions);
 	System.out.println("Number of negative vectors: " + filteredVectorCount);
-
+	System.out.println(mod.transform("RCSB"));
+	System.out.println(mod.transform("PDB"));
+	System.out.println(mod.transform("the"));
 	System.out.println("Hello World!");
 
     }
@@ -129,7 +133,7 @@ public class Main {
 	    } catch (IOException ex) {
 		ex.printStackTrace();
 	    } catch (ClassNotFoundException uhoh){
-	    System.out.println("Some class was not found");
+		System.out.println("Some class was not found");
 	    }
 	} else {
 	    // Downloads the PdbId's from the rcsb Rest API sources and parses the XML
@@ -161,7 +165,7 @@ public class Main {
 	 * @return whether condition has been met (is it a negative ID)
 	 */
 	public Boolean call(JournalFeatureVector vect) {
-	    return vect.getNegativeIdList().size() > 0 && vect.getRCSBCount() > 0;
+	    return vect.getNegativeIdList().size() > 0;
 	}
     }
 }

@@ -1,7 +1,7 @@
 package org.sdsc.pdbproject;
 
 /**
- * Java libraries
+ * java  libraries
  */
 
 import java.util.*;
@@ -63,7 +63,8 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         for (int i = 0; i < vect.length; i++) {
             // Load File name and line
             ArrayList<String> NegativeList = NegativeExtractor(Body.get(i));
-            vect[i] = new JournalFeatureVector()
+	    
+	    vect[i] = new JournalFeatureVector()
                     .setRCSBnum(RCSB_PDB_num)
                     .setP_D_B(P_D_B_)
                     .setFileName(RDDVect._1)
@@ -91,10 +92,11 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
             matches.add(matcher.group());
         }
         ArrayList<String> RecordedInvalid = new ArrayList<String>();
+
         if (!matches.isEmpty()) {
             // Hash it is important to have the smaller array iterated over first
             for (String match : matches) {
-                if (HashVar.value().isNotReleased(match)) RecordedInvalid.add(match);
+                if (HashVar.value().isNotReleased(match)){RecordedInvalid.add(match);}
             }
         }
         return RecordedInvalid;
