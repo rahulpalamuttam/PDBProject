@@ -1,6 +1,7 @@
 package org.sdsc.pdbproject;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 /**
  * Custom class that models a feature vector.
  * It must implement the interface Serializable so that copies
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author Rahul Palamuttam
  */
-public class JournalFeatureVector {
+public class JournalFeatureVector implements Serializable{
     private int RCSB_PDB_occurrences;
     private int Protein_Data_Bank_count;
     private String FileName;
