@@ -63,7 +63,12 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         for (int i = 0; i < vect.length; i++) {
             // Load File name and line
             ArrayList<String> NegativeList = NegativeExtractor(Body.get(i));
-            vect[i] = new JournalFeatureVector(RCSB_PDB_num, P_D_B_, RDDVect._1, Body.get(i), NegativeList);
+            vect[i] = new JournalFeatureVector()
+                    .setRCSBnum(RCSB_PDB_num)
+                    .setP_D_B(P_D_B_)
+                    .setFileName(RDDVect._1)
+                    .setContext(Body.get(i))
+                    .setNegativeIdList(NegativeList);
         }
 
         // Collect the JournalFeatureVectors into a List

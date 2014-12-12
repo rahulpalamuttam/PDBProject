@@ -31,7 +31,7 @@ public class RegexpFilter implements Function<JournalFeatureVector, Boolean> {
 	}
 
 	public Boolean call(JournalFeatureVector vect){
-	String line = vect.getContextLine();
+		String line = vect.getContext();
 	Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
 	Matcher matcher = pattern.matcher(line);
 	List<String> matches= new ArrayList<String>();
@@ -45,8 +45,8 @@ public class RegexpFilter implements Function<JournalFeatureVector, Boolean> {
 	    for(String match : matches){
 		if(HashVar.value().contains(match.toUpperCase())) RecordedInvalid.add(match);
 	    }
-	    vect.changeNegativeIdList(RecordedInvalid);
-	    if(!RecordedInvalid.isEmpty()) return true;
+		vect.setNegativeIdList(RecordedInvalid);
+		if(!RecordedInvalid.isEmpty()) return true;
 	}
 	return false;
     } 

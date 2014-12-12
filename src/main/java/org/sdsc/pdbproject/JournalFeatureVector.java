@@ -1,11 +1,6 @@
 package org.sdsc.pdbproject;
 
-import java.lang.StringBuffer;
-import java.util.List;
 import java.util.ArrayList;
-import java.io.Serializable;
-
-
 /**
  * Custom class that models a feature vector.
  * It must implement the interface Serializable so that copies
@@ -14,117 +9,55 @@ import java.io.Serializable;
  *
  * @author Rahul Palamuttam
  */
-public  class JournalFeatureVector implements Serializable{
-    /**
-     * The File name.
-     */
-    String FileName;
-    /**
-     * The Context line.
-     */
-    String ContextLine;
-    /**
-     * The Negative id list.
-     */
-    ArrayList<String> NegativeIdList;
-    /**
-     * The Positive id list.
-     */
-    ArrayList<String> PositiveIdList;
-    /**
-     * The RCSB _ pDB _ occurrences.
-     */
-    int RCSB_PDB_occurrences; // number of times "RCSB PDB" occurs in the file
-    /**
-     * The Protein _ data _ bank _ count.
-     */
-    int Protein_Data_Bank_count; // number of times "Protein Data Bank" occurs in the file
+public class JournalFeatureVector {
+    private int RCSB_PDB_occurrences;
+    private int Protein_Data_Bank_count;
+    private String FileName;
+    private String context;
+    private ArrayList<String> NegativeIdList;
 
-    /**
-     * Instantiates a new Journal feature vector.
-     *
-     * @param RCSBnum The number of times "RCSB PDB" occurs
-     * @param P_D_B The number of times "Protein Data Bank"
-     * @param file The name of the file
-     * @param Context The line
-     * @param NegIds A list of the Negative ID's
-     */
-    public JournalFeatureVector(int RCSBnum,int P_D_B, String file, String Context, ArrayList<String> NegIds){
-	RCSB_PDB_occurrences = RCSBnum;
-	Protein_Data_Bank_count = P_D_B;
-	FileName = file;
-	NegativeIdList = NegIds;
-	ContextLine = Context;
+    public JournalFeatureVector setRCSBnum(int rcsBnum) {
+        this.RCSB_PDB_occurrences = rcsBnum;
+        return this;
     }
 
-    /**
-     * Change file name.
-     *
-     * @param file the file
-     */
-    public void changeFileName(String file){
-	FileName = file;
+    public JournalFeatureVector setP_D_B(int p_d_b) {
+        this.Protein_Data_Bank_count = p_d_b;
+        return this;
     }
 
-    /**
-     * Change negative id list.
-     *
-     * @param idNum the id num
-     */
-    public void changeNegativeIdList(ArrayList<String> idNum){
-	NegativeIdList = idNum;
+    public JournalFeatureVector setFileName(String fileName) {
+        this.FileName = fileName;
+        return this;
     }
 
-    /**
-     * Get negative id list.
-     *
-     * @return array list
-     */
+    public JournalFeatureVector setContext(String context) {
+        this.context = context;
+        return this;
+    }
+
+    public JournalFeatureVector setNegativeIdList(ArrayList<String> negativeIdList) {
+        this.NegativeIdList = negativeIdList;
+        return this;
+    }
+
     public ArrayList<String> getNegativeIdList(){
-	return NegativeIdList;
+        return NegativeIdList;
     }
 
-    /**
-     * Change context line.
-     *
-     * @param line the line
-     */
-    public void changeContextLine(String line){
-	ContextLine = line;
+    public String getContext(){
+        return context;
     }
 
-    /**
-     * Get context line.
-     *
-     * @return the string
-     */
-    public String getContextLine(){
-	return ContextLine;
-    }
-
-    /**
-     * Get rCSB count.
-     *
-     * @return the int
-     */
     public int getRCSBCount(){
-	return RCSB_PDB_occurrences;
+        return RCSB_PDB_occurrences;
     }
-
-    /**
-     * Get protein _ data _ bank count.
-     *
-     * @return the int
-     */
-    public int getProtein_Data_BankCount(){
-	return Protein_Data_Bank_count;
-    }
-
     public String toString(){
-	StringBuffer output = new StringBuffer();
-	String line = (ContextLine.length() > 50)? ContextLine.substring(0,50) : ContextLine;
-	output.append(FileName + "||" + NegativeIdList + "||" + line +
-		      "||" + RCSB_PDB_occurrences + "||" + Protein_Data_Bank_count);
-	return output.toString();
+        StringBuffer output = new StringBuffer();
+        String line = (context.length() > 50)? context.substring(0,50) : context;
+        output.append(FileName + "||" + NegativeIdList + "||" + line +
+                "||" + RCSB_PDB_occurrences + "||" + Protein_Data_Bank_count);
+        return output.toString();
     }
+
 }
