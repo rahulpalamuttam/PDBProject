@@ -19,31 +19,31 @@ import scala.Tuple2;
  * matching sequences in a given line. Then it searches for these sequences
  * among all the unreleased IDs.
  *
- * @author Rahul Palamuttam
- *
  * @param Tuple2<String, String> element from a JavaPairRDD <file, line>
- * @param Boolean if the line contains an invalid PDB ID
+ * @param Boolean        if the line contains an invalid PDB ID
+ * @author Rahul Palamuttam
  */
 public class PairRegexpFilter implements Function<Tuple2<String, String>, Boolean> {
-	Broadcast<PdbHashTable> varBroad;
+    Broadcast<PdbHashTable> varBroad;
 
-	public PairRegexpFilter(Broadcast<PdbHashTable> var) {
-	varBroad = var;
+    public PairRegexpFilter(Broadcast<PdbHashTable> var) {
+        varBroad = var;
     }
-    public Boolean call(Tuple2<String, String> line){
-	Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
-	Matcher matcher = pattern.matcher(line._2);
-	List<String> matches= new ArrayList<String>();
-	// records all the matching sequences in the line
-	while(matcher.find()){
-	    matches.add(matcher.group());
-	}
-	    
-	if(!matches.isEmpty()){
-	    for(String match : matches){
-		if(varBroad.value().contains(match.toUpperCase())) return true;
-	    }
-	}
-	return false;
-    } 
+
+    public Boolean call(Tuple2<String, String> line) {
+        Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
+        Matcher matcher = pattern.matcher(line._2);
+        List<String> matches = new ArrayList<String>();
+        // records all the matching sequences in the line
+        while (matcher.find()) {
+            matches.add(matcher.group());
+        }
+
+        if (!matches.isEmpty()) {
+            for (String match : matches) {
+                if (varBroad.value().contains(match.toUpperCase())) return true;
+            }
+        }
+        return false;
+    }
 }

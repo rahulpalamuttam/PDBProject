@@ -96,7 +96,6 @@ public class PdbHashTable implements Serializable {
     }
 
 
-
     /**
      * prints the HashTable list sizes (where values are assigned)
      */
@@ -160,6 +159,7 @@ public class PdbHashTable implements Serializable {
         PdbId IdAtIndex = listAtIndex.get(indexAtList);
         return !(IdAtIndex.isReleased());
     }
+
     /**
      * Private class to eliminate compiler warnings using generics
      */
@@ -185,7 +185,7 @@ public class PdbHashTable implements Serializable {
          * @return the int
          */
         public int indexOf(String value) {
-	    String upperCaseValue = value.toUpperCase();
+            String upperCaseValue = value.toUpperCase();
             int length = this.size() - 1;
             for (; length > -1; length--) {
                 if (this.get(length).IdName().equals(upperCaseValue)) break;

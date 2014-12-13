@@ -20,9 +20,9 @@ import scala.Tuple2;
  * This map class extracts all the features from the file and the individual lines.
  * It maps Tuple2<File, Body> -> JournalFeatureVector<F1,F2,...>
  *
- * @author Rahul Palamuttam
  * @param Tuple2<String:String> The input to the Mapper consists of file name and body
- * @param JournalFeatureVector the output of the Mapper
+ * @param JournalFeatureVector  the output of the Mapper
+ * @author Rahul Palamuttam
  */
 public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>, JournalFeatureVector> {
     private Broadcast<PdbHashTable> HashVar;
@@ -36,6 +36,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
     /**
      * Instantiates a new Feature extractor with a hashtable
      * to look up valid invalid ids.
+     *
      * @param BroadcastHash the broadcasted hashtable
      */
     public FeatureExtractor(Broadcast<PdbHashTable> BroadcastHash) {
@@ -63,8 +64,8 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         for (int i = 0; i < vect.length; i++) {
             // Load File name and line
             ArrayList<String> NegativeList = NegativeExtractor(Body.get(i));
-	    
-	    vect[i] = new JournalFeatureVector()
+
+            vect[i] = new JournalFeatureVector()
                     .setRCSBnum(RCSB_PDB_num)
                     .setP_D_B(P_D_B_)
                     .setFileName(RDDVect._1)
@@ -96,7 +97,9 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         if (!matches.isEmpty()) {
             // Hash it is important to have the smaller array iterated over first
             for (String match : matches) {
-                if (HashVar.value().isNotReleased(match)){RecordedInvalid.add(match);}
+                if (HashVar.value().isNotReleased(match)) {
+                    RecordedInvalid.add(match);
+                }
             }
         }
         return RecordedInvalid;

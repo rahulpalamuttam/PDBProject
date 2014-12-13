@@ -2,15 +2,16 @@ package org.sdsc.pdbproject;
 
 import java.util.ArrayList;
 import java.io.Serializable;
+
 /**
-o * Custom class that models a feature vector.
+ * o * Custom class that models a feature vector.
  * It must implement the interface Serializable so that copies
  * of the entire project can be distributed along with its fields.
  * NOTE: ALL FIELDS MEMBERS MUST BE SERIALIZABLE
  *
  * @author Rahul Palamuttam
  */
-public class JournalFeatureVector implements Serializable{
+public class JournalFeatureVector implements Serializable {
     private int RCSB_PDB_occurrences;
     private int Protein_Data_Bank_count;
     private String FileName;
@@ -32,9 +33,8 @@ public class JournalFeatureVector implements Serializable{
         return this;
     }
 
-    public JournalFeatureVector setContext(String context) {
-        this.context = context;
-        return this;
+    public ArrayList<String> getNegativeIdList() {
+        return NegativeIdList;
     }
 
     public JournalFeatureVector setNegativeIdList(ArrayList<String> negativeIdList) {
@@ -42,40 +42,43 @@ public class JournalFeatureVector implements Serializable{
         return this;
     }
 
-    public ArrayList<String> getNegativeIdList(){
-        return NegativeIdList;
-    }
-
-    public String getContext(){
+    public String getContext() {
         return context;
     }
 
-    public int getRCSBCount(){
+    public JournalFeatureVector setContext(String context) {
+        this.context = context;
+        return this;
+    }
+
+    public int getRCSBCount() {
         return RCSB_PDB_occurrences;
     }
-    public String toString(){
+
+    public String toString() {
         StringBuffer output = new StringBuffer();
-	int startIndex = context.length()/2;
-	int endIndex = context.length()/2;
-	if(NegativeIdList.size() == 1){
-	    startIndex = context.indexOf(NegativeIdList.get(0)) - 100;
-	    if(startIndex < 0) startIndex = 0;
-	    endIndex = context.indexOf(NegativeIdList.get(0)) + 100;
-	    if(endIndex >= context.length()) endIndex = context.length() - 1;
-	} else if(NegativeIdList.size() > 1) {
-	    for(String id: NegativeIdList){
-		int idIndex = context.indexOf(id);
-		if(idIndex > endIndex){
-		    endIndex = idIndex;
-		}
-		if(idIndex < startIndex){
-		    startIndex = idIndex;
-		}
-	    }
-	} else {;}
+        int startIndex = context.length() / 2;
+        int endIndex = context.length() / 2;
+        if (NegativeIdList.size() == 1) {
+            startIndex = context.indexOf(NegativeIdList.get(0)) - 100;
+            if (startIndex < 0) startIndex = 0;
+            endIndex = context.indexOf(NegativeIdList.get(0)) + 100;
+            if (endIndex >= context.length()) endIndex = context.length() - 1;
+        } else if (NegativeIdList.size() > 1) {
+            for (String id : NegativeIdList) {
+                int idIndex = context.indexOf(id);
+                if (idIndex > endIndex) {
+                    endIndex = idIndex;
+                }
+                if (idIndex < startIndex) {
+                    startIndex = idIndex;
+                }
+            }
+        } else {
+        }
         String line = context.substring(startIndex, endIndex);
         output.append(FileName + "||" + NegativeIdList + "||" + line +
-		      "||" + RCSB_PDB_occurrences + "||" + Protein_Data_Bank_count);
+                "||" + RCSB_PDB_occurrences + "||" + Protein_Data_Bank_count);
         return output.toString();
     }
 
