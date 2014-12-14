@@ -55,22 +55,26 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         // Make a list of lines from the file body
         List<String> Body = Arrays.asList(RDDVect._2().split("\n"));
         //Extract some features from the entire file
-        int RCSB_PDB_num = RCSB_PDB_Counter(RDDVect._2());
-        int P_D_B_ = Protein_Data_Bank_Counter(RDDVect._2());
+        int RCSB_PDB_num = OccurrenceCounter(RDDVect._2(), "RCSB PDB");
+        int P_D_B_ = OccurrenceCounter(RDDVect._2(), "Protein Data Bank");
+	int PDBCount = OccurrenceCounter(RDDVect._2(), "PDB");
         //Make an array of JournalVectors to fill for each line
         JournalFeatureVector[] vect = new JournalFeatureVector[Body.size()];
 
         //Extract and Load the features into the vectors
         for (int i = 0; i < vect.length; i++) {
             // Load File name and line
-            ArrayList<String> NegativeList = NegativeExtractor(Body.get(i));
-
+            Tuple2<ArrayList<String>,ArrayList<String>> PosNeg = Extractor(Body.get(i));
+	    ArrayList<String> NegativeList = PosNeg._1();
+	    ArrayList<String> PositiveList = PosNeg._2();
             vect[i] = new JournalFeatureVector()
                     .setRCSBnum(RCSB_PDB_num)
                     .setP_D_B(P_D_B_)
                     .setFileName(RDDVect._1)
                     .setContext(Body.get(i))
-                    .setNegativeIdList(NegativeList);
+		    .setNegativeIdList(NegativeList)
+		.setPositiveIdList(PositiveList)
+		.setPDBCount(PDBCount);
         }
 
         // Collect the JournalFeatureVectors into a List
@@ -82,10 +86,10 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      * Extracts the Negative ID's from the line.
      *
      * @param line the line
-     * @return the array list of Negative ID's
+     * @return the Tuple containing lists <Negative, Positive>
      */
-    public ArrayList<String> NegativeExtractor(String line) {
-        Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
+    public Tuple2<ArrayList<String>, ArrayList<String>> Extractor(String line) {
+        Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}\\b");
         Matcher matcher = pattern.matcher(line);
         Set<String> matches = new HashSet<String>();
         // records all the matching sequences in the line
@@ -93,16 +97,19 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
             matches.add(matcher.group());
         }
         ArrayList<String> RecordedInvalid = new ArrayList<String>();
-
+	ArrayList<String> RecordedValid = new ArrayList<String>();
         if (!matches.isEmpty()) {
             // Hash it is important to have the smaller array iterated over first
             for (String match : matches) {
                 if (HashVar.value().isNotReleased(match)) {
                     RecordedInvalid.add(match);
                 }
+		if (HashVar.value().isReleased(match)) {
+		    RecordedValid.add(match);
+		}
             }
         }
-        return RecordedInvalid;
+        return new Tuple2(RecordedInvalid, RecordedValid);
     }
 
     /**
@@ -111,9 +118,9 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      * @param body the body
      * @return the int
      */
-    public int RCSB_PDB_Counter(String body) {
+    public int OccurrenceCounter(String body, String matchstring) {
         int numOfOccurrences = 0;
-        Pattern patter = Pattern.compile("RCSB PDB");
+        Pattern patter = Pattern.compile(matchstring);
         Matcher matcher = patter.matcher(body);
         while (matcher.find()) {
             numOfOccurrences++;
@@ -121,19 +128,4 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         return numOfOccurrences;
     }
 
-    /**
-     * Count the number of times "Protein Data Bank" occurs
-     *
-     * @param body the body
-     * @return the int
-     */
-    public int Protein_Data_Bank_Counter(String body) {
-        int numOfOccurrences = 0;
-        Pattern patter = Pattern.compile("Protein Data Bank");
-        Matcher matcher = patter.matcher(body);
-        while (matcher.find()) {
-            numOfOccurrences++;
-        }
-        return numOfOccurrences;
-    }
-}
+}    

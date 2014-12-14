@@ -27,7 +27,7 @@ public class FeatureExtractorTest {
     public void RCSB_PDB_CounterTest() {
         String assertString = "The RCSB_PDB_CounterTest is fault";
         String body = "Hello my name is RCSB PDB";
-        int testCount = testFeatureExtractor.RCSB_PDB_Counter(body);
+        int testCount = testFeatureExtractor.OccurrenceCounter(body, "RCSB PDB");
         assertTrue(assertString, testCount == 1);
     }
 }
