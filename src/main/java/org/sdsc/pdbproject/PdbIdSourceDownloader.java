@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
 import com.jcabi.xml.XML;
 import com.jcabi.xml.XMLDocument;
 
@@ -193,6 +194,7 @@ public class PdbIdSourceDownloader {
     /**
      * Helper function that parses the XML records in the unreleasedRecords list
      * for PDBID's. There is no release date or doi associated with these.
+     *
      * @param hashTable returns the hashtable with unreleased ID's added
      */
     private static void putUnreleasedInHashTable(PdbHashTable hashTable) {
@@ -216,6 +218,7 @@ public class PdbIdSourceDownloader {
 
     /**
      * Function that will return a list construction of the ID's (instead of a hash).
+     *
      * @return nothing for now
      */
     public static PdbList getPdbList() {

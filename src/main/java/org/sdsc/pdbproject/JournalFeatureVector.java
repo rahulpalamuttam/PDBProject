@@ -2,9 +2,11 @@ package org.sdsc.pdbproject;
 
 import java.util.ArrayList;
 import java.io.Serializable;
+
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.LabeledPoint;
+
 /**
  * o * Custom class that models a feature vector.
  * It must implement the interface Serializable so that copies
@@ -21,22 +23,24 @@ public class JournalFeatureVector implements Serializable {
     private String context;
     private ArrayList<String> NegativeIdList;
     private ArrayList<String> PositiveIdList;
-    public LabeledPoint FeatureLabel(){
-	double RCSB = (RCSB_PDB_occurrences > 0)? 1 : 0;
-	double ProtDatBankC = (Protein_Data_Bank_count > 0)? 1 : 0;
-	double PDBC = (PDBCount > 0)? 1 : 0;
-	double neg = (NegativeIdList.size() > 0)? 1: 0;
-	double pos = (PositiveIdList.size() > 0)? 1: 0;
-	return new LabeledPoint(pos, Vectors.dense(RCSB, ProtDatBankC, PDBC));
+
+    public LabeledPoint FeatureLabel() {
+        double RCSB = (RCSB_PDB_occurrences > 0) ? 1 : 0;
+        double ProtDatBankC = (Protein_Data_Bank_count > 0) ? 1 : 0;
+        double PDBC = (PDBCount > 0) ? 1 : 0;
+        double neg = (NegativeIdList.size() > 0) ? 1 : 0;
+        double pos = (PositiveIdList.size() > 0) ? 1 : 0;
+        return new LabeledPoint(pos, Vectors.dense(RCSB, ProtDatBankC, PDBC));
     }
 
-    public Vector FeatureVector(){
-	double RCSB = (RCSB_PDB_occurrences > 0)? 1 : 0;
-	double PDBC = (Protein_Data_Bank_count > 0)? 1 : 0;
-	double neg = (NegativeIdList.size() > 0)? 1: 0;
-	double PDBCounter = (PDBCount > 0)? 1 : 0;
-	return Vectors.dense(RCSB,PDBC, PDBCounter);
+    public Vector FeatureVector() {
+        double RCSB = (RCSB_PDB_occurrences > 0) ? 1 : 0;
+        double PDBC = (Protein_Data_Bank_count > 0) ? 1 : 0;
+        double neg = (NegativeIdList.size() > 0) ? 1 : 0;
+        double PDBCounter = (PDBCount > 0) ? 1 : 0;
+        return Vectors.dense(RCSB, PDBC, PDBCounter);
     }
+
     public JournalFeatureVector setRCSBnum(int rcsBnum) {
         this.RCSB_PDB_occurrences = rcsBnum;
         return this;
@@ -47,10 +51,6 @@ public class JournalFeatureVector implements Serializable {
         return this;
     }
 
-    public JournalFeatureVector setPDBCount(int p_d_b) {
-	this.PDBCount = p_d_b;
-	return this;
-    }
     public JournalFeatureVector setFileName(String fileName) {
         this.FileName = fileName;
         return this;
@@ -60,19 +60,20 @@ public class JournalFeatureVector implements Serializable {
         return NegativeIdList;
     }
 
-    public ArrayList<String> getPositiveIdList() {
-	return PositiveIdList;
-    }
-
     public JournalFeatureVector setNegativeIdList(ArrayList<String> negativeIdList) {
         this.NegativeIdList = negativeIdList;
         return this;
     }
 
-    public JournalFeatureVector setPositiveIdList(ArrayList<String> positiveIdList) {
-	this.PositiveIdList = positiveIdList;
-	return this;
+    public ArrayList<String> getPositiveIdList() {
+        return PositiveIdList;
     }
+
+    public JournalFeatureVector setPositiveIdList(ArrayList<String> positiveIdList) {
+        this.PositiveIdList = positiveIdList;
+        return this;
+    }
+
     public String getContext() {
         return context;
     }
@@ -87,17 +88,23 @@ public class JournalFeatureVector implements Serializable {
     }
 
     public int getProtDatBanCount() {
-	return Protein_Data_Bank_count;
+        return Protein_Data_Bank_count;
     }
 
     public int getPDBCount() {
-	return PDBCount;
+        return PDBCount;
     }
+
+    public JournalFeatureVector setPDBCount(int p_d_b) {
+        this.PDBCount = p_d_b;
+        return this;
+    }
+
     public String toString() {
         StringBuffer output = new StringBuffer();
         int startIndex = context.length() / 2;
         int endIndex = context.length() / 2;
-	ArrayList<String> chosen = (NegativeIdList.size() > PositiveIdList.size())? NegativeIdList : PositiveIdList;
+        ArrayList<String> chosen = (NegativeIdList.size() > PositiveIdList.size()) ? NegativeIdList : PositiveIdList;
         if (chosen.size() == 1) {
             startIndex = context.indexOf(chosen.get(0)) - 100;
             if (startIndex < 0) startIndex = 0;
@@ -116,14 +123,14 @@ public class JournalFeatureVector implements Serializable {
         } else {
         }
         String line = context.substring(startIndex, endIndex);
-	String abbreviated = line.length() > 250 ? line.substring(0,250): line;
+        String abbreviated = line.length() > 250 ? line.substring(0, 250) : line;
         output.append(FileName + "\n");
-	output.append("Negative ID's:" + NegativeIdList + "\n");
-	output.append("Positive ID's:" +  PositiveIdList + "\n");
-	output.append("Context: " + abbreviated + "\n");
-	output.append("RCSB_PDB_occurrences :" + RCSB_PDB_occurrences + "\n");
+        output.append("Negative ID's:" + NegativeIdList + "\n");
+        output.append("Positive ID's:" + PositiveIdList + "\n");
+        output.append("Context: " + abbreviated + "\n");
+        output.append("RCSB_PDB_occurrences :" + RCSB_PDB_occurrences + "\n");
         output.append("Protein Data Bank occurrences: " + Protein_Data_Bank_count + "\n");
-	output.append("PDB Count : " + PDBCount + "\n");
+        output.append("PDB Count : " + PDBCount + "\n");
         return output.toString();
     }
 

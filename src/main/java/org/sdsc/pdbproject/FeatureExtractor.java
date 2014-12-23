@@ -57,24 +57,24 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         //Extract some features from the entire file
         int RCSB_PDB_num = OccurrenceCounter(RDDVect._2(), "RCSB PDB");
         int P_D_B_ = OccurrenceCounter(RDDVect._2(), "Protein Data Bank");
-	int PDBCount = OccurrenceCounter(RDDVect._2(), "PDB");
+        int PDBCount = OccurrenceCounter(RDDVect._2(), "PDB");
         //Make an array of JournalVectors to fill for each line
         JournalFeatureVector[] vect = new JournalFeatureVector[Body.size()];
 
         //Extract and Load the features into the vectors
         for (int i = 0; i < vect.length; i++) {
             // Load File name and line
-            Tuple2<ArrayList<String>,ArrayList<String>> PosNeg = Extractor(Body.get(i));
-	    ArrayList<String> NegativeList = PosNeg._1();
-	    ArrayList<String> PositiveList = PosNeg._2();
+            Tuple2<ArrayList<String>, ArrayList<String>> PosNeg = Extractor(Body.get(i));
+            ArrayList<String> NegativeList = PosNeg._1();
+            ArrayList<String> PositiveList = PosNeg._2();
             vect[i] = new JournalFeatureVector()
                     .setRCSBnum(RCSB_PDB_num)
                     .setP_D_B(P_D_B_)
                     .setFileName(RDDVect._1)
                     .setContext(Body.get(i))
-		    .setNegativeIdList(NegativeList)
-		.setPositiveIdList(PositiveList)
-		.setPDBCount(PDBCount);
+                    .setNegativeIdList(NegativeList)
+                    .setPositiveIdList(PositiveList)
+                    .setPDBCount(PDBCount);
         }
 
         // Collect the JournalFeatureVectors into a List
@@ -97,16 +97,16 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
             matches.add(matcher.group());
         }
         ArrayList<String> RecordedInvalid = new ArrayList<String>();
-	ArrayList<String> RecordedValid = new ArrayList<String>();
+        ArrayList<String> RecordedValid = new ArrayList<String>();
         if (!matches.isEmpty()) {
             // Hash it is important to have the smaller array iterated over first
             for (String match : matches) {
                 if (HashVar.value().isNotReleased(match)) {
                     RecordedInvalid.add(match);
                 }
-		if (HashVar.value().isReleased(match)) {
-		    RecordedValid.add(match);
-		}
+                if (HashVar.value().isReleased(match)) {
+                    RecordedValid.add(match);
+                }
             }
         }
         return new Tuple2(RecordedInvalid, RecordedValid);
