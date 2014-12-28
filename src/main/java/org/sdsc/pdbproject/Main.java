@@ -1,9 +1,6 @@
 package org.sdsc.pdbproject;
 
-import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 /**
  * Apache Libraries.
  * Spark Java programming APIs. It contains the
@@ -35,7 +32,6 @@ import org.apache.spark.api.java.function.*;
  * Library for broadcasting objects to nodes
  */
 import org.apache.spark.broadcast.*;
-import org.apache.spark.mllib.feature.*;
 
 /**
  * The Main class
