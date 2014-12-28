@@ -70,16 +70,6 @@ public class Main {
 
         JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
 
-        Word2Vec featuration = new Word2Vec().setVectorSize(1);
-        JavaRDD<ArrayList<String>> words = negativeVector.map(new Function<JournalFeatureVector, ArrayList<String>>() {
-            public ArrayList<String> call(JournalFeatureVector vect) {
-                String[] array = vect.getContext().split(" ");
-                return new ArrayList<String>(Arrays.asList(array));
-            }
-        });
-
-
-        Word2VecModel mod = featuration.fit(words);
 
 
         // Collects all the key value pairs into a List view
@@ -102,9 +92,6 @@ public class Main {
         System.out.println("Number of line vectors: " + vectorLinesCount);
         System.out.println("Number of partitions: " + numOfPartitions);
         System.out.println("Number of negative vectors: " + filteredVectorCount);
-        System.out.println(mod.transform("RCSB"));
-        System.out.println(mod.transform("PDB"));
-        System.out.println(mod.transform("the"));
         System.out.println("Hello World!");
 
     }

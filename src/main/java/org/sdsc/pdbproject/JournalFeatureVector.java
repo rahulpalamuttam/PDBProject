@@ -17,7 +17,7 @@ public class JournalFeatureVector implements Serializable {
     private String FileName;
     private String context;
     private ArrayList<String> NegativeIdList;
-
+    private ArrayList<String> PositiveIdList;
     public JournalFeatureVector setRCSBnum(int rcsBnum) {
         this.RCSB_PDB_occurrences = rcsBnum;
         return this;
