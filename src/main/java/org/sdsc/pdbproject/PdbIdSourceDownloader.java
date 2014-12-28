@@ -173,6 +173,7 @@ public class PdbIdSourceDownloader {
                 Date example = format.parse(date);
                 hashTable.put(idName, doi, example);
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -208,19 +209,12 @@ public class PdbIdSourceDownloader {
     public static void deleteFile() {
         try {
             File HashFile = new File(HASHSERIALFILE);
-            boolean deletion = HashFile.delete();
+            HashFile.delete();
         } catch (Exception som) {
             som.printStackTrace();
         }
     }
 
-    /**
-     * Function that will return a list construction of the ID's (instead of a hash).
-     * @return nothing for now
-     */
-    public static PdbList getPdbList() {
-        return null;
-    }
 
 
 }
