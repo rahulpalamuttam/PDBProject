@@ -104,14 +104,15 @@ public class PdbIdSourceDownloader {
         } else {
             // Load the records from the URLs
             loadCurrentRecords();
-            loadObsoleteRecords();
+	    // loadObsoleteRecords();
             loadUnreleasedRecords();
-            int tableSize = currentRecords.size() + unreleasedRecords.size() + obsoleteRecords.size();
+	    int obsoleteRecordsSize = (obsoleteRecords == null)? 0:obsoleteRecords.size();
+            int tableSize = currentRecords.size() + unreleasedRecords.size() + obsoleteRecordsSize;
             hashTable = new PdbHashTable(tableSize);
             // put in the current records
             putCurrentInHashTable(hashTable);
             // put in the obsolete record
-            putObsoleteInHashTable(hashTable);
+            // putObsoleteInHashTable(hashTable);
             // put in the unreleased records
             putUnreleasedInHashTable(hashTable);
             writeHashTable(hashTable);
@@ -199,7 +200,15 @@ public class PdbIdSourceDownloader {
     private static void putUnreleasedInHashTable(PdbHashTable hashTable) {
         for (XML record : unreleasedRecords) {
             String idName = record.xpath("//@structureId").get(0);
-            hashTable.put(idName, null, null);
+	    String depositionDate = record.xpath("//@initialDepositionDate").get(0);
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	    try {
+		Date example = format.parse(depositionDate);
+		hashTable.put(idName, null, example);
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+	    
         }
     }
 

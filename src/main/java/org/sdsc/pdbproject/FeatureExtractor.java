@@ -6,7 +6,8 @@ package org.sdsc.pdbproject;
 
 import java.util.*;
 import java.util.regex.*;
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 /**
  * Spark Programming Libraries
  */
@@ -52,6 +53,9 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      * @return Iterable structure of feature vectors
      */
     public Iterable<JournalFeatureVector> call(Tuple2<String, String> RDDVect) {
+	// Date published extraction from title of file
+	
+	Date date = DateParse(RDDVect._1());
         // Make a list of lines from the file body
         List<String> Body = Arrays.asList(RDDVect._2().split("\n"));
         //Extract some features from the entire file
@@ -63,7 +67,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         //Extract and Load the features into the vectors
         for (int i = 0; i < vect.length; i++) {
             // Load File name and line
-            ArrayList<String> NegativeList = NegativeExtractor(Body.get(i));
+            ArrayList<String> NegativeList = NegativeExtractor(Body.get(i), date);
 
             vect[i] = new JournalFeatureVector()
                     .setRCSBnum(RCSB_PDB_num)
@@ -78,13 +82,34 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
     }
 
     /**
+     * Parses the String for the Date regular expression found in Article Names.
+     * Example : _2008_Jun_1_
+     * @param String to parse
+     * @return the date object
+     */
+    public Date DateParse(String dateString){
+	Pattern pattern = Pattern.compile("_[1-2][0-9]{3}_[A-Z][a-z]{2}_[1-31]_");
+	Matcher matcher = pattern.matcher(dateString);
+	String datefields = matcher.group();
+	DateFormat format = new SimpleDateFormat("_yyyy_MMM_dd_");
+	Date ret = null;
+	try {
+	    ret = format.parse(dateString);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+
+	return ret;
+    }
+
+    /**
      * Negative extractor.
      * Extracts the Negative ID's from the line.
      *
      * @param line the line
      * @return the array list of Negative ID's
      */
-    public ArrayList<String> NegativeExtractor(String line) {
+    public ArrayList<String> NegativeExtractor(String line, Date date) {
         Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
         Matcher matcher = pattern.matcher(line);
         Set<String> matches = new HashSet<String>();
@@ -97,7 +122,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         if (!matches.isEmpty()) {
             // Hash it is important to have the smaller array iterated over first
             for (String match : matches) {
-                if (HashVar.value().isNotReleased(match)) {
+                if (HashVar.value().isNotReleased(match, date)) {
                     RecordedInvalid.add(match);
                 }
             }

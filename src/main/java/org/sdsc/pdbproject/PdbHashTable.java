@@ -148,7 +148,7 @@ public class PdbHashTable implements Serializable {
      * @param value the value
      * @return the boolean
      */
-    public boolean isNotReleased(String value) {
+    public boolean isNotReleased(String value, Date date) {
         String upperCaseValue = value.toUpperCase();
         int index = HashFunc(upperCaseValue);
         // get list and see if id exists
@@ -157,7 +157,7 @@ public class PdbHashTable implements Serializable {
         if (indexAtList == -1) return false; // nonexistent ID's
         // get id and check if its released
         PdbId IdAtIndex = listAtIndex.get(indexAtList);
-        return !(IdAtIndex.isReleased());
+        return !(IdAtIndex.isReleased(date));
     }
 
     /**
