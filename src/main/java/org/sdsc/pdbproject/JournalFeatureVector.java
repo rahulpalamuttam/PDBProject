@@ -74,13 +74,16 @@ public class JournalFeatureVector implements Serializable {
         StringBuffer output = new StringBuffer();
         int startIndex = context.length() / 2;
         int endIndex = context.length() / 2;
-        if (NegativeIdList.size() == 1) {
-            startIndex = context.indexOf(NegativeIdList.get(0)) - 100;
+	ArrayList<String> combination = new ArrayList<String>();
+	combination.addAll(NegativeIdList);
+	combination.addAll(PositiveIdList);
+        if (combination.size() == 1) {
+            startIndex = context.indexOf(combination.get(0)) - 100;
             if (startIndex < 0) startIndex = 0;
-            endIndex = context.indexOf(NegativeIdList.get(0)) + 100;
+            endIndex = context.indexOf(combination.get(0)) + 100;
             if (endIndex >= context.length()) endIndex = context.length() - 1;
-        } else if (NegativeIdList.size() > 1) {
-            for (String id : NegativeIdList) {
+        } else if (combination.size() > 1) {
+            for (String id : combination) {
                 int idIndex = context.indexOf(id);
                 if (idIndex > endIndex) {
                     endIndex = idIndex;
@@ -91,9 +94,15 @@ public class JournalFeatureVector implements Serializable {
             }
         } else {
         }
-        String line = context.substring(startIndex, endIndex);
-        output.append(FileName + "||" + NegativeIdList + "||" + line +
-                "||" + RCSB_PDB_occurrences + "||" + Protein_Data_Bank_count);
+	String line = context.substring(startIndex, endIndex);
+        String abbreviated = line.length() > 250 ? line.substring(0, 250) : line;
+        output.append(FileName + "\n");
+        output.append("Negative ID's:" + NegativeIdList + "\n");
+        output.append("Positive ID's:" + PositiveIdList + "\n");
+        output.append("Context: " + abbreviated + "\n");
+        output.append("RCSB_PDB_occurrences :" + RCSB_PDB_occurrences + "\n");
+        output.append("Protein Data Bank occurrences: " + Protein_Data_Bank_count + "\n");
+
         return output.toString();
     }
 

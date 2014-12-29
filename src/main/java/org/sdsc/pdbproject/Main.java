@@ -46,10 +46,11 @@ public class Main {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        String dataSet = args[0];
-
+        Runtime runtime = Runtime.getRuntime();
+	String dataSet = args[0];
+	System.out.println("Max used up memory" + runtime.maxMemory());
         // The default 2 line structure for spark programs
-        SparkConf conf = new SparkConf().setAppName("pdbproject");
+        SparkConf conf = new SparkConf().setAppName("pdbproject").set("spark.executor.memory", "7g");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         // Create and Broadcast the HashTable of unreleased ID's
@@ -65,11 +66,11 @@ public class Main {
         JavaRDD<JournalFeatureVector> fileVector = wholeFile.flatMap(new FeatureExtractor(varBroad));
 
         JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
-
+	JavaRDD<JournalFeatureVector> positiveVector = fileVector.filter(new PositiveFilter());
 
         // Collects all the key value pairs into a List view
         List<JournalFeatureVector> negativeList = negativeVector.collect();
-
+	List<JournalFeatureVector> positiveList = positiveVector.collect();
         // aggregate some countable metrics
         // number of files
         long wholeFileCount = wholeFile.count();
@@ -78,17 +79,24 @@ public class Main {
         int numOfPartitions = fileVector.partitions().size();
         // number of lines filtered
         long filteredVectorCount = negativeVector.count();
+	long positiveVectorCount = positiveVector.count();
 
 
         for (JournalFeatureVector n : negativeList) {
             System.out.println(n);
         }
-        System.out.println("Number of files: " + wholeFileCount);
+	for (JournalFeatureVector n : positiveList) {
+	    System.out.println(n);
+	}
+	int mb = 1024*1024;
+	System.out.println("Free Memory:" + runtime.maxMemory()/mb);
+	System.out.println("Number of files: " + wholeFileCount);
         System.out.println("Number of line vectors: " + vectorLinesCount);
         System.out.println("Number of partitions: " + numOfPartitions);
         System.out.println("Number of negative vectors: " + filteredVectorCount);
+	System.out.println("Number of positive vectors: " + positiveVectorCount);
         System.out.println("Hello World!");
-
+	
     }
 
 
@@ -107,5 +115,13 @@ public class Main {
             ret = vect.getNegativeIdList().size() > 0 && vect.getPositiveIdList().size() == 0;
             return ret;
         }
+    }
+
+    public static class PositiveFilter implements Function<JournalFeatureVector, Boolean> {
+	public Boolean call(JournalFeatureVector vect) {
+	    boolean ret = false;
+	    ret = vect.getPositiveIdList().size() > 0 && vect.getNegativeIdList().size() == 0;
+	    return ret;
+	}
     }
 }
