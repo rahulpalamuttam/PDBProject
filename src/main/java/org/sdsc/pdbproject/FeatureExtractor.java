@@ -55,7 +55,13 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
     public Iterable<JournalFeatureVector> call(Tuple2<String, String> RDDVect) {
 	// Date published extraction from title of file
 	
-	Date date = DateParse(RDDVect._1());
+	Date date = null;
+	try{
+	    date = DateParse(RDDVect._1());
+	} catch (Exception e) {
+	    System.out.println(RDDVect._1());
+	    e.printStackTrace();
+	}
         // Make a list of lines from the file body
         List<String> Body = Arrays.asList(RDDVect._2().split("\n"));
         //Extract some features from the entire file
@@ -63,48 +69,44 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         int P_D_B_ = Protein_Data_Bank_Counter(RDDVect._2());
         //Make an array of JournalVectors to fill for each line
         JournalFeatureVector[] vect = new JournalFeatureVector[Body.size()];
-
+	
         //Extract and Load the features into the vectors
         for (int i = 0; i < vect.length; i++) {
             // Load File name and line
             ArrayList<String> NegativeList = NegativeExtractor(Body.get(i), date);
-
+	    
             vect[i] = new JournalFeatureVector()
-                    .setRCSBnum(RCSB_PDB_num)
-                    .setP_D_B(P_D_B_)
-                    .setFileName(RDDVect._1)
-                    .setContext(Body.get(i))
-                    .setNegativeIdList(NegativeList);
+		.setRCSBnum(RCSB_PDB_num)
+		.setP_D_B(P_D_B_)
+		.setFileName(RDDVect._1)
+		.setContext(Body.get(i))
+		.setNegativeIdList(NegativeList);
         }
-
+	
         // Collect the JournalFeatureVectors into a List
         return Arrays.asList(vect);
     }
-
+    
     /**
      * Parses the String for the Date regular expression found in Article Names.
      * Example : _2008_Jun_1_
      * @param String to parse
      * @return the date object
      */
-    public Date DateParse(String dateString){
-        Pattern pattern = Pattern.compile("_[1-2][0-9]{3}_[A-Z][a-z]{2}_[0-9]{1,2}_");
+    public Date DateParse(String dateString) throws Exception {
+        Pattern pattern = Pattern.compile("_[1-2][0-9]{3}_[A-Z][a-z]{2}_[0-9]{1,2}[_,(]");
         Matcher matcher = pattern.matcher(dateString);
         String datefields = null;
         while (matcher.find()) {
             datefields = matcher.group();
+	    break;
         }
         DateFormat format = new SimpleDateFormat("_yyyy_MMM_dd_");
         Date ret = null;
-	try {
         ret = format.parse(datefields);
-    } catch (Exception e) {
-        e.printStackTrace();
-	}
-
 	return ret;
     }
-
+    
     /**
      * Negative extractor.
      * Extracts the Negative ID's from the line.
