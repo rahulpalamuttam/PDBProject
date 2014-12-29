@@ -2,6 +2,8 @@ package org.sdsc.pdbproject;
 
 import org.junit.Test;
 
+import java.util.Date;
+
 import static org.junit.Assert.*;
 
 /**
@@ -29,5 +31,17 @@ public class FeatureExtractorTest {
         String body = "Hello my name is RCSB PDB";
         int testCount = testFeatureExtractor.RCSB_PDB_Counter(body);
         assertTrue(assertString, testCount == 1);
+    }
+
+    @Test
+    public void testDateParse() throws Exception {
+        Date date = testFeatureExtractor.DateParse("Nucleic_Acids_Res_2006_Dec_5_34(22)_6708-6717.nxml");
+        String assertString = date.toString();
+        System.out.println(assertString);
+        assertTrue(assertString, date != null);
+        date = testFeatureExtractor.DateParse(" Nucleic_Acids_Res_2005_Jul_27_33(13)_4106-4116.nxml");
+        assertString = date.toString();
+        System.out.println(assertString);
+        assertTrue(assertString, date != null);
     }
 }

@@ -88,15 +88,18 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      * @return the date object
      */
     public Date DateParse(String dateString){
-	Pattern pattern = Pattern.compile("_[1-2][0-9]{3}_[A-Z][a-z]{2}_[1-31]_");
-	Matcher matcher = pattern.matcher(dateString);
-	String datefields = matcher.group();
-	DateFormat format = new SimpleDateFormat("_yyyy_MMM_dd_");
-	Date ret = null;
+        Pattern pattern = Pattern.compile("_[1-2][0-9]{3}_[A-Z][a-z]{2}_[0-9]{1,2}_");
+        Matcher matcher = pattern.matcher(dateString);
+        String datefields = null;
+        while (matcher.find()) {
+            datefields = matcher.group();
+        }
+        DateFormat format = new SimpleDateFormat("_yyyy_MMM_dd_");
+        Date ret = null;
 	try {
-	    ret = format.parse(dateString);
-	} catch (Exception e) {
-	    e.printStackTrace();
+        ret = format.parse(datefields);
+    } catch (Exception e) {
+        e.printStackTrace();
 	}
 
 	return ret;
