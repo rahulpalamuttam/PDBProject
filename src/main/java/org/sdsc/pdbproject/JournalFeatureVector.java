@@ -22,7 +22,9 @@ public class JournalFeatureVector implements Serializable {
         this.RCSB_PDB_occurrences = rcsBnum;
         return this;
     }
-
+    public int getRCSBnum(){
+	return RCSB_PDB_occurrences;
+    }
     public JournalFeatureVector setP_D_B(int p_d_b) {
         this.Protein_Data_Bank_count = p_d_b;
         return this;

@@ -104,7 +104,9 @@ public class Main {
          * @return whether condition has been met (is it a negative ID)
          */
         public Boolean call(JournalFeatureVector vect) {
-            return vect.getNegativeIdList().size() > 0;
+	    boolean ret = false;
+	    ret = vect.getNegativeIdList().size() > 0;
+            return ret;
         }
     }
 }
