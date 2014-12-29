@@ -61,7 +61,8 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
 	} catch (Exception e) {
 	    System.out.println(RDDVect._1());
 	    e.printStackTrace();
-	}
+        return null;
+    }
         // Make a list of lines from the file body
         List<String> Body = Arrays.asList(RDDVect._2().split("\n"));
         //Extract some features from the entire file
@@ -94,7 +95,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      * @return the date object
      */
     public Date DateParse(String dateString) throws Exception {
-        Pattern pattern = Pattern.compile("_[1-2][0-9]{3}_(([A-Z][a-z]{2})|([1-9]))_[0-9]{1,2}");
+        Pattern pattern = Pattern.compile("_[1-2][0-9]{3}_(([A-Z][a-z]{2})|([1-9]|10|11|12))_[0-9]{1,2}");
         Matcher matcher = pattern.matcher(dateString);
         String datefields = null;
         if (matcher.find()) {

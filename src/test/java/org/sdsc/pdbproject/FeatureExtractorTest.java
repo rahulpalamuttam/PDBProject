@@ -51,5 +51,9 @@ public class FeatureExtractorTest {
         assertString = date.toString();
         System.out.println(assertString);
         assertTrue(assertString, date != null);
+//        date = testFeatureExtractor.DateParse("/Users/rahulpalamuttam/Research_UCSD_Protein/POSITIVE_DATASET/NXML_FILES/Acta_Naturae_2011_Jan-Mar_3(1)_69-76.nxml");
+//        assertString = date.toString();
+//        System.out.println(assertString);
+//        assertTrue(assertString, date != null);
     }
 }
