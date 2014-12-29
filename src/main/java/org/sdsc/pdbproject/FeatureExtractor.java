@@ -61,7 +61,6 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
 	} catch (Exception e) {
 	    System.out.println(RDDVect._1());
 	    e.printStackTrace();
-        return null;
     }
         // Make a list of lines from the file body
         List<String> Body = Arrays.asList(RDDVect._2().split("\n"));
@@ -129,11 +128,15 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
     /**
      * Negative extractor.
      * Extracts the Negative ID's from the line.
+     * The date is absolutely necessary to extract NegativeID's.
+     * We need deposition dates.
      *
+     * @param date the journal publish date
      * @param line the line
      * @return the array list of Negative ID's
      */
     public ArrayList<String> NegativeExtractor(String line, Date date) {
+        if (date == null) return null;
         Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
         Matcher matcher = pattern.matcher(line);
         Set<String> matches = new HashSet<String>();
