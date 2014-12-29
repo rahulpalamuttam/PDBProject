@@ -14,7 +14,7 @@ import java.util.Date;
 public class PdbId implements Serializable {
     private String IdName;
     private String doi;
-    private Date dateReleased;
+    private Date DepositionDate;
 
     /**
      * Instantiates a new Pdb Id.
@@ -26,7 +26,7 @@ public class PdbId implements Serializable {
     public PdbId(String Id, String doiString, Date date) {
         IdName = Id;
         doi = doiString;
-        dateReleased = date;
+        DepositionDate = date;
     }
 
     /**
@@ -37,7 +37,7 @@ public class PdbId implements Serializable {
      * @return whether it is Released
      */
     public boolean isReleased() {
-        return dateReleased != null;
+        return DepositionDate != null;
     }
 
     /**
@@ -50,8 +50,8 @@ public class PdbId implements Serializable {
      * @return whether it has been released at the date
      */
     public boolean isReleased(Date date) {
-        if (dateReleased == null) return false;
-        return date.after(dateReleased);
+        if (DepositionDate == null) return false;
+        return date.after(DepositionDate);
     }
 
     public String IdName() {
@@ -59,7 +59,7 @@ public class PdbId implements Serializable {
     }
 
     public String toString() {
-        return IdName + dateReleased + doi;
+        return IdName + DepositionDate + doi;
     }
 
 }

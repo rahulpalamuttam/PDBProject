@@ -29,7 +29,7 @@ import com.jcabi.xml.XMLDocument;
 
 public class PdbIdSourceDownloader {
     private static String HASHSERIALFILE = "PDBIDHash.ser";
-    private static String CURRENT_URL = "http://www.rcsb.org/pdb/rest/customReport.xml?pdbids=*&customReportColumns=structureId,releaseDate,pdbDoi";
+    private static String CURRENT_URL = "http://www.rcsb.org/pdb/rest/customReport.xml?pdbids=*&customReportColumns=structureId,depositionDate,pdbDoi";
     private static String OBSOLETE_URL = "http://www.rcsb.org/pdb/rest/getObsolete";
     private static String UNRELEASED_URL = "http://www.rcsb.org/pdb/rest/getUnreleased";
     private static List<XML> currentRecords;
@@ -167,7 +167,7 @@ public class PdbIdSourceDownloader {
     private static void putCurrentInHashTable(PdbHashTable hashTable) {
         for (XML record : currentRecords) {
             String idName = record.xpath("//dimStructure.structureId/text()").get(0);
-            String date = record.xpath("//dimStructure.releaseDate/text()").get(0);
+            String date = record.xpath("//dimStructure.depositionDate/text()").get(0);
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String doi = record.xpath("//dimStructure.pdbDoi/text()").get(0);
             try {
