@@ -67,7 +67,6 @@ public class Main {
         JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
 
 
-
         // Collects all the key value pairs into a List view
         List<JournalFeatureVector> negativeList = negativeVector.collect();
 
@@ -104,8 +103,8 @@ public class Main {
          * @return whether condition has been met (is it a negative ID)
          */
         public Boolean call(JournalFeatureVector vect) {
-	    boolean ret = false;
-	    ret = vect.getNegativeIdList().size() > 0;
+            boolean ret = false;
+            ret = vect.getNegativeIdList().size() > 0 && vect.getPositiveIdList().size() == 0;
             return ret;
         }
     }

@@ -161,6 +161,23 @@ public class PdbHashTable implements Serializable {
     }
 
     /**
+     * Checks if a PDB ID is released.
+     * returns false if the PDB ID is not released
+     * or does not exist.
+     */
+    public boolean isReleased(String value, Date date) {
+        String upperCaseValue = value.toUpperCase();
+        int index = HashFunc(upperCaseValue);
+        // get list and see if id exists
+        PdbIdList listAtIndex = HashTable[index];
+        int indexAtList = listAtIndex.indexOf(value);
+        if (indexAtList == -1) return false; // nonexistent ID's
+        // get id and check if its released
+        PdbId IdAtIndex = listAtIndex.get(indexAtList);
+        return IdAtIndex.isReleased(date);
+    }
+
+    /**
      * Private class to eliminate compiler warnings using generics
      */
     private class PdbIdList extends ArrayList<PdbId> {

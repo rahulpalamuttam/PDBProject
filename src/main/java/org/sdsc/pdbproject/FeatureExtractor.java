@@ -53,15 +53,15 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      * @return Iterable structure of feature vectors
      */
     public Iterable<JournalFeatureVector> call(Tuple2<String, String> RDDVect) {
-	// Date published extraction from title of file
-	
-	Date date = null;
-	try{
-	    date = DateParse(RDDVect._1());
-	} catch (Exception e) {
-	    System.out.println(RDDVect._1());
-	    e.printStackTrace();
-    }
+        // Date published extraction from title of file
+
+        Date date = null;
+        try {
+            date = DateParse(RDDVect._1());
+        } catch (Exception e) {
+            System.out.println(RDDVect._1());
+            e.printStackTrace();
+        }
         // Make a list of lines from the file body
         List<String> Body = Arrays.asList(RDDVect._2().split("\n"));
         //Extract some features from the entire file
@@ -69,27 +69,30 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         int P_D_B_ = Protein_Data_Bank_Counter(RDDVect._2());
         //Make an array of JournalVectors to fill for each line
         JournalFeatureVector[] vect = new JournalFeatureVector[Body.size()];
-	
+
         //Extract and Load the features into the vectors
         for (int i = 0; i < vect.length; i++) {
             // Load File name and line
-            ArrayList<String> NegativeList = NegativeExtractor(Body.get(i), date);
-	    
+            Tuple2<ArrayList<String>, ArrayList<String>> PosNeg = Extractor(Body.get(i), date);
+            ArrayList<String> NegativeList = PosNeg._1();
+            ArrayList<String> PositiveList = PosNeg._2();
             vect[i] = new JournalFeatureVector()
-		.setRCSBnum(RCSB_PDB_num)
-		.setP_D_B(P_D_B_)
-		.setFileName(RDDVect._1)
-		.setContext(Body.get(i))
-		.setNegativeIdList(NegativeList);
+                    .setRCSBnum(RCSB_PDB_num)
+                    .setP_D_B(P_D_B_)
+                    .setFileName(RDDVect._1)
+                    .setContext(Body.get(i))
+                    .setNegativeIdList(NegativeList)
+                    .setPositiveIdList(PositiveList);
         }
-	
+
         // Collect the JournalFeatureVectors into a List
         return Arrays.asList(vect);
     }
-    
+
     /**
      * Parses the String for the Date regular expression found in Article Names.
      * Example : _2008_Jun_1_
+     *
      * @param String to parse
      * @return the date object
      */
@@ -124,7 +127,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         }
         return ret;
     }
-    
+
     /**
      * Negative extractor.
      * Extracts the Negative ID's from the line.
@@ -133,9 +136,9 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      *
      * @param date the journal publish date
      * @param line the line
-     * @return the array list of Negative ID's
+     * @return tuple of two arraylists <RecordedInvalid, RecordedValid>
      */
-    public ArrayList<String> NegativeExtractor(String line, Date date) {
+    public Tuple2<ArrayList<String>, ArrayList<String>> Extractor(String line, Date date) {
 
         Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
         Matcher matcher = pattern.matcher(line);
@@ -144,17 +147,22 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         while (matcher.find()) {
             matches.add(matcher.group());
         }
+        ArrayList<String> RecordedValid = new ArrayList<String>();
         ArrayList<String> RecordedInvalid = new ArrayList<String>();
-        if (date == null) return RecordedInvalid; // if we don't know the date just return an empty list
+        if (date == null)
+            return new Tuple2(RecordedInvalid, RecordedValid); // if we don't know the date just return an empty inist
         if (!matches.isEmpty()) {
             // Hash it is important to have the smaller array iterated over first
             for (String match : matches) {
                 if (HashVar.value().isNotReleased(match, date)) {
                     RecordedInvalid.add(match);
                 }
+                if (HashVar.value().isReleased(match, date)) {
+                    RecordedValid.add(match);
+                }
             }
         }
-        return RecordedInvalid;
+        return new Tuple2(RecordedInvalid, RecordedValid);
     }
 
     /**

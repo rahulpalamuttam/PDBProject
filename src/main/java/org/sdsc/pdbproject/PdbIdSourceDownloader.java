@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
 import com.jcabi.xml.XML;
 import com.jcabi.xml.XMLDocument;
 
@@ -22,8 +23,8 @@ import com.jcabi.xml.XMLDocument;
  *
  * @author Rahul Palamuttam
  * @source http://www.rcsb.org/pdb/rest/customReport.xml?pdbids=*&customReportColumns=structureId,releaseDate,pdbDoi
- * @source http://www.rcsb.org/pdb/test/getObsolete
- * @source http://www.rcsb.org/pdb/test/getUnreleased
+ * @source http://www.rcsb.org/pdb/rest/getObsolete
+ * @source http://www.rcsb.org/pdb/rest/getUnreleased
  * @source http://xml.jcabi.com/
  */
 
@@ -104,9 +105,9 @@ public class PdbIdSourceDownloader {
         } else {
             // Load the records from the URLs
             loadCurrentRecords();
-	    // loadObsoleteRecords();
+            // loadObsoleteRecords();
             loadUnreleasedRecords();
-	    int obsoleteRecordsSize = (obsoleteRecords == null)? 0:obsoleteRecords.size();
+            int obsoleteRecordsSize = (obsoleteRecords == null) ? 0 : obsoleteRecords.size();
             int tableSize = currentRecords.size() + unreleasedRecords.size() + obsoleteRecordsSize;
             hashTable = new PdbHashTable(tableSize);
             // put in the current records
@@ -195,20 +196,21 @@ public class PdbIdSourceDownloader {
     /**
      * Helper function that parses the XML records in the unreleasedRecords list
      * for PDBID's. There is no release date or doi associated with these.
+     *
      * @param hashTable returns the hashtable with unreleased ID's added
      */
     private static void putUnreleasedInHashTable(PdbHashTable hashTable) {
         for (XML record : unreleasedRecords) {
             String idName = record.xpath("//@structureId").get(0);
-	    String depositionDate = record.xpath("//@initialDepositionDate").get(0);
+            String depositionDate = record.xpath("//@initialDepositionDate").get(0);
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-	    try {
-		Date example = format.parse(depositionDate);
-		hashTable.put(idName, null, example);
-	    } catch (Exception e) {
-		e.printStackTrace();
-	    }
-	    
+            try {
+                Date example = format.parse(depositionDate);
+                hashTable.put(idName, null, example);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -223,7 +225,6 @@ public class PdbIdSourceDownloader {
             som.printStackTrace();
         }
     }
-
 
 
 }

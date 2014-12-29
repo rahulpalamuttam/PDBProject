@@ -1,5 +1,6 @@
 package org.sdsc.pdbproject;
 
+
 import java.util.ArrayList;
 import java.io.Serializable;
 
@@ -18,13 +19,16 @@ public class JournalFeatureVector implements Serializable {
     private String context;
     private ArrayList<String> NegativeIdList;
     private ArrayList<String> PositiveIdList;
+
+    public int getRCSBnum() {
+        return RCSB_PDB_occurrences;
+    }
+
     public JournalFeatureVector setRCSBnum(int rcsBnum) {
         this.RCSB_PDB_occurrences = rcsBnum;
         return this;
     }
-    public int getRCSBnum(){
-	return RCSB_PDB_occurrences;
-    }
+
     public JournalFeatureVector setP_D_B(int p_d_b) {
         this.Protein_Data_Bank_count = p_d_b;
         return this;
@@ -41,6 +45,15 @@ public class JournalFeatureVector implements Serializable {
 
     public JournalFeatureVector setNegativeIdList(ArrayList<String> negativeIdList) {
         this.NegativeIdList = negativeIdList;
+        return this;
+    }
+
+    public ArrayList<String> getPositiveIdList() {
+        return PositiveIdList;
+    }
+
+    public JournalFeatureVector setPositiveIdList(ArrayList<String> positiveIdList) {
+        this.PositiveIdList = positiveIdList;
         return this;
     }
 
