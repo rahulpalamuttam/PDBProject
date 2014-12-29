@@ -136,7 +136,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      * @return the array list of Negative ID's
      */
     public ArrayList<String> NegativeExtractor(String line, Date date) {
-        if (date == null) return null;
+
         Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
         Matcher matcher = pattern.matcher(line);
         Set<String> matches = new HashSet<String>();
@@ -145,7 +145,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
             matches.add(matcher.group());
         }
         ArrayList<String> RecordedInvalid = new ArrayList<String>();
-
+        if (date == null) return RecordedInvalid; // if we don't know the date just return an empty list
         if (!matches.isEmpty()) {
             // Hash it is important to have the smaller array iterated over first
             for (String match : matches) {
