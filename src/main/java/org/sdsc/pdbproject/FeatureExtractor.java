@@ -173,7 +173,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      */
     public int RCSB_PDB_Counter(String body) {
         int numOfOccurrences = 0;
-        Pattern patter = Pattern.compile("RCSB PDB");
+        Pattern patter = Pattern.compile("PDB");
         Matcher matcher = patter.matcher(body);
         while (matcher.find()) {
             numOfOccurrences++;

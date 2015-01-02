@@ -33,10 +33,16 @@ public class JournalFeatureVector implements Serializable {
         this.Protein_Data_Bank_count = p_d_b;
         return this;
     }
-
+    public int getPDBCount(){
+	return Protein_Data_Bank_count;
+    }
     public JournalFeatureVector setFileName(String fileName) {
         this.FileName = fileName;
         return this;
+    }
+
+    public String getFileName(){
+	return FileName;
     }
 
     public ArrayList<String> getNegativeIdList() {
