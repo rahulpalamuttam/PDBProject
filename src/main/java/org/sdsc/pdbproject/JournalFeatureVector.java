@@ -33,16 +33,11 @@ public class JournalFeatureVector implements Serializable {
         this.Protein_Data_Bank_count = p_d_b;
         return this;
     }
-    public int getPDBCount(){
-	return Protein_Data_Bank_count;
-    }
+
+
     public JournalFeatureVector setFileName(String fileName) {
         this.FileName = fileName;
         return this;
-    }
-
-    public String getFileName(){
-	return FileName;
     }
 
     public ArrayList<String> getNegativeIdList() {
@@ -72,23 +67,21 @@ public class JournalFeatureVector implements Serializable {
         return this;
     }
 
-    public int getRCSBCount() {
-        return RCSB_PDB_occurrences;
-    }
 
     public String toString() {
         StringBuffer output = new StringBuffer();
         int startIndex = context.length() / 2;
         int endIndex = context.length() / 2;
-	ArrayList<String> combination = new ArrayList<String>();
-	combination.addAll(NegativeIdList);
-	combination.addAll(PositiveIdList);
+        ArrayList<String> combination = new ArrayList<String>();
+        combination.addAll(NegativeIdList);
+        combination.addAll(PositiveIdList);
         if (combination.size() == 1) {
             startIndex = context.indexOf(combination.get(0)) - 100;
             if (startIndex < 0) startIndex = 0;
             endIndex = context.indexOf(combination.get(0)) + 100;
             if (endIndex >= context.length()) endIndex = context.length() - 1;
-        } else if (combination.size() > 1) {
+        }
+        if (combination.size() > 1) {
             for (String id : combination) {
                 int idIndex = context.indexOf(id);
                 if (idIndex > endIndex) {
@@ -98,9 +91,8 @@ public class JournalFeatureVector implements Serializable {
                     startIndex = idIndex;
                 }
             }
-        } else {
         }
-	String line = context.substring(startIndex, endIndex);
+        String line = context.substring(startIndex, endIndex);
         String abbreviated = line.length() > 250 ? line.substring(0, 250) : line;
         output.append(FileName + "\n");
         output.append("Negative ID's:" + NegativeIdList + "\n");
