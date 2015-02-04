@@ -33,6 +33,9 @@ import org.apache.spark.api.java.function.*;
  */
 import org.apache.spark.broadcast.*;
 
+import java.util.List;
+import java.util.regex.Pattern;
+
 /**
  * The Main class
  * This is a Spark application that searches through
@@ -46,7 +49,7 @@ public class Main {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        String dataSet = "Samples";
+        String dataSet = "../Samples/SmallSet";
         Runtime runtime = Runtime.getRuntime();
         long megabytes = runtime.maxMemory() / (1024 * 1024);
         System.out.println("Max used up memory" + megabytes);
@@ -55,9 +58,9 @@ public class Main {
                 .setAppName("pdbproject")
                 .setMaster("local")
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-                .set("spark.storage.memoryFration", "0.6")
-                .set("spark.executor.memory", "2g")
-                .set("spark.driver.memory", "2g")
+                .set("spark.storage.memoryFration", "0.75")
+                .set("spark.executor.memory", "7g")
+                .set("spark.driver.memory", "5g")
                 .set("spark.driver.maxResultSize", "2g");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
@@ -68,7 +71,7 @@ public class Main {
         Broadcast<PdbHashTable> varBroad = sc.broadcast(HashTable);
 
         // Loads the text files with RDD<filename, text>
-        JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet).sample(false, 0.1, 10).repartition(100);
+        JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet).sample(false, 0.5, 1).repartition(100);
 
         // Transforms the basic PairRDD<filename, body> to a JavaRDD<Vector{filename,ID,context}>
         JavaRDD<JournalFeatureVector> fileVector = wholeFile.flatMap(new FeatureExtractor(varBroad));
@@ -82,6 +85,8 @@ public class Main {
 
         // aggregate some countable metrics
 
+        MLClassifier mlClassifier = new MLClassifier(positiveVector, negativeVector);
+        mlClassifier.Run();
         // number of files
         long wholeFileCount = wholeFile.count();
         // number of lines and parititons;
@@ -100,6 +105,7 @@ public class Main {
         System.out.println("Number of positive vectors: " + positiveVectorCount);
         System.out.println("Hello World!");
 
+
     }
 
 
@@ -114,7 +120,10 @@ public class Main {
          * @return whether condition has been met (is it a negative ID)
          */
         public Boolean call(JournalFeatureVector vect) {
+            List<String> negatives = vect.getNegativeIdList();
+            for (String id : negatives) {
 
+            }
             return vect.getNegativeIdList().size() > 0 && vect.getPositiveIdList().size() == 0;
 
         }
@@ -127,5 +136,6 @@ public class Main {
                     vect.getRCSBnum() > 0;
         }
     }
+
 
 }

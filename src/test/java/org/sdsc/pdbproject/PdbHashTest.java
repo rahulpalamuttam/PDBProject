@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
  *
  * @author Rahul Palamuttam
  */
+
 public class PdbHashTest {
     private static PdbHashTable TestHash;
     private String RANDOM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -38,7 +39,7 @@ public class PdbHashTest {
     /**
      * Tests if the Hash table was created.
      */
-    @Test
+
     public void testcreateUnreleasedHash() {
         String assertString = "PdbHashTable was not called: ";
         assertNotNull(assertString, TestHash);
@@ -47,7 +48,7 @@ public class PdbHashTest {
     /**
      * Check if toString works.
      */
-    @Test
+
     public void testtoString() {
         String assertString = "UnredIDHash.toString returned null: ";
         String testString = TestHash.toString();
@@ -59,7 +60,7 @@ public class PdbHashTest {
     /**
      * Check if contains is functional.
      */
-    @Test
+
     public void testcontains() {
         String assertString = "PdbHashTable.testcontains() said: ";
         String random = "sdfs";
