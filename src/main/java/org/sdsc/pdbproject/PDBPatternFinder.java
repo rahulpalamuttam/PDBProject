@@ -28,7 +28,7 @@ public class PDBPatternFinder {
 
     public boolean findPattern(String pdbId, String context) {
         String patternCompileString = concatenatePatternStrings(idPattern, doiPattern, linkPattern);
-        String braced = "(" + patternCompileString + pdbId + ")";
+        String braced = "(" + patternCompileString + ")" + pdbId;
         Pattern pattern = Pattern.compile(braced);
         Matcher matcher = pattern.matcher(context);
         if (matcher.find()) {

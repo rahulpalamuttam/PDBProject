@@ -33,6 +33,7 @@ import org.apache.spark.api.java.function.*;
  */
 import org.apache.spark.broadcast.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -86,7 +87,7 @@ public class Main {
         // aggregate some countable metrics
 
         MLClassifier mlClassifier = new MLClassifier(positiveVector, negativeVector);
-        mlClassifier.Run();
+
         // number of files
         long wholeFileCount = wholeFile.count();
         // number of lines and parititons;
@@ -95,7 +96,7 @@ public class Main {
         // number of lines filtered
         long filteredVectorCount = negativeVector.count();
         long positiveVectorCount = positiveVector.count();
-
+        mlClassifier.Run();
         //complete.saveAsTextFile("csvfile");
         System.out.println("Free Memory:" + runtime.maxMemory() / (1024 * 1024));
         System.out.println("Number of files: " + wholeFileCount);
@@ -120,20 +121,38 @@ public class Main {
          * @return whether condition has been met (is it a negative ID)
          */
         public Boolean call(JournalFeatureVector vect) {
+            PDBPatternFinder patternFinder = new PDBPatternFinder();
             List<String> negatives = vect.getNegativeIdList();
+            String context = vect.getContext();
             for (String id : negatives) {
-
+                boolean found = patternFinder.findPattern(id, context);
+                if (found == true) return false;
             }
             return vect.getNegativeIdList().size() > 0 && vect.getPositiveIdList().size() == 0;
-
         }
     }
 
+    /**
+     * The positive filter checks for any occurrences of positive ID's
+     * regardless if is has been unreleased or not.
+     */
     public static class PositiveFilter implements Function<JournalFeatureVector, Boolean> {
         public Boolean call(JournalFeatureVector vect) {
+            PDBPatternFinder patternFinder = new PDBPatternFinder();
+            List<String> complete = new ArrayList<String>();
+            complete.addAll(vect.getPositiveIdList());
+            complete.addAll(vect.getNegativeIdList());
+            String context = vect.getContext();
+            // if the pattern is found just return true
+            for (String id : complete) {
+                if (patternFinder.findPattern(id, context)) {
+                    return true;
+                }
+            }
+
+            // otherwise just check if all found ID's are positive
             return vect.getPositiveIdList().size() > 0 &&
-                    vect.getNegativeIdList().size() == 0 &&
-                    vect.getRCSBnum() > 0;
+                    vect.getNegativeIdList().size() == 0;
         }
     }
 
