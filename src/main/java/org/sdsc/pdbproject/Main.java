@@ -73,29 +73,38 @@ public class Main {
 
         // Loads the text files with RDD<filename, text>
         JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet).sample(false, 0.5, 1).repartition(100);
+        // test set
+        JavaPairRDD<String, String> testFile = sc.wholeTextFiles(dataSet).sample(false, 0.9, 2).repartition(100);
 
         // Transforms the basic PairRDD<filename, body> to a JavaRDD<Vector{filename,ID,context}>
         JavaRDD<JournalFeatureVector> fileVector = wholeFile.flatMap(new FeatureExtractor(varBroad));
+        // test vector
+        JavaRDD<JournalFeatureVector> testVector = testFile.flatMap(new FeatureExtractor(varBroad));
 
         JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
         JavaRDD<JournalFeatureVector> positiveVector = fileVector.filter(new PositiveFilter());
+        //test vectors
+        JavaRDD<JournalFeatureVector> testNegVector = testVector.filter(new NegativeFilter());
+        JavaRDD<JournalFeatureVector> testPosVector = testVector.filter(new PositiveFilter());
 
-        // Collects all the key value pairs into a List view.
-        //List<JournalFeatureVector> negativeList = negativeVector.collect();
-        //List<JournalFeatureVector> positiveList = positiveVector.collect();
+        // number of lines filtered
+        long filteredVectorCount = negativeVector.count();
+        long positiveVectorCount = positiveVector.count();
+        long testNegVectorCount = testNegVector.count();
+        long testPosVectorCount = testPosVector.count();
+        JavaRDD<JournalFeatureVector> testpositiveVector = positiveVector.sample(false, ((double) filteredVectorCount / (double) positiveVectorCount), 1);
+        long testPositiveCount = testpositiveVector.count();
 
-        // aggregate some countable metrics
 
-        MLClassifier mlClassifier = new MLClassifier(positiveVector, negativeVector);
+        MLClassifier mlClassifier = new MLClassifier(testpositiveVector, negativeVector, testPosVector, testNegVector);
+
 
         // number of files
         long wholeFileCount = wholeFile.count();
         // number of lines and parititons;
         long vectorLinesCount = fileVector.count();
         int numOfPartitions = fileVector.partitions().size();
-        // number of lines filtered
-        long filteredVectorCount = negativeVector.count();
-        long positiveVectorCount = positiveVector.count();
+
         mlClassifier.Run();
         //complete.saveAsTextFile("csvfile");
         System.out.println("Free Memory:" + runtime.maxMemory() / (1024 * 1024));
@@ -103,7 +112,10 @@ public class Main {
         System.out.println("Number of line vectors: " + vectorLinesCount);
         System.out.println("Number of partitions: " + numOfPartitions);
         System.out.println("Number of negative vectors: " + filteredVectorCount);
+        System.out.println("Number of filtered positive vectors: " + testPositiveCount);
         System.out.println("Number of positive vectors: " + positiveVectorCount);
+        System.out.println("Number of test negative vectors: " + testNegVectorCount);
+        System.out.println("Number of test positive vectors: " + testPosVectorCount);
         System.out.println("Hello World!");
 
 
