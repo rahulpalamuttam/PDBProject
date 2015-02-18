@@ -103,7 +103,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         if (matcher.find()) {
             datefields = matcher.group();
         } else {
-            throw new Exception("matcher could not find date in string");
+            throw new Exception("matcher could not find date in string " + dateString);
         }
 
         // this right here is a hack
