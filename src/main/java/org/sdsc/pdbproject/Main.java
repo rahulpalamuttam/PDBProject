@@ -33,6 +33,8 @@ import org.apache.spark.api.java.function.*;
  */
 import org.apache.spark.broadcast.*;
 
+import java.io.File;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -50,7 +52,12 @@ public class Main {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        String dataSet = "../Samples/SmallSet";
+        try {
+            System.setOut(new PrintStream(new File("Output.txt")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String dataSet = args[0];
         Runtime runtime = Runtime.getRuntime();
         long megabytes = runtime.maxMemory() / (1024 * 1024);
         System.out.println("Max used up memory" + megabytes);
@@ -59,7 +66,7 @@ public class Main {
                 .setAppName("pdbproject")
                 .setMaster("local")
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-                .set("spark.storage.memoryFration", "0.75")
+                .set("spark.storage.memoryFraction", "0.75")
                 .set("spark.executor.memory", "7g")
                 .set("spark.driver.memory", "5g")
                 .set("spark.driver.maxResultSize", "2g");
@@ -72,26 +79,38 @@ public class Main {
         Broadcast<PdbHashTable> varBroad = sc.broadcast(HashTable);
 
         // Loads the text files with RDD<filename, text>
-        JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet).sample(false, 0.5, 1).repartition(100);
-        // test set
-        JavaPairRDD<String, String> testFile = sc.wholeTextFiles(dataSet).sample(false, 0.9, 2).repartition(100);
+        JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet)
+                .sample(false, 0.5, 1)
+                .repartition(100);
+
+        // test set - this set does not include the training set - achieved by the subtract function
+        JavaPairRDD<String, String> testFile = sc.wholeTextFiles(dataSet)
+                .subtract(wholeFile)
+                .repartition(100);
 
         // Transforms the basic PairRDD<filename, body> to a JavaRDD<Vector{filename,ID,context}>
         JavaRDD<JournalFeatureVector> fileVector = wholeFile.flatMap(new FeatureExtractor(varBroad));
         // test vector
         JavaRDD<JournalFeatureVector> testVector = testFile.flatMap(new FeatureExtractor(varBroad));
-
+        // extracts the training negative and positive vectors
         JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
         JavaRDD<JournalFeatureVector> positiveVector = fileVector.filter(new PositiveFilter());
-        //test vectors
+        // extracts the test negative and positive vectors
         JavaRDD<JournalFeatureVector> testNegVector = testVector.filter(new NegativeFilter());
         JavaRDD<JournalFeatureVector> testPosVector = testVector.filter(new PositiveFilter());
 
         // number of lines filtered
+        // training set
         long filteredVectorCount = negativeVector.count();
         long positiveVectorCount = positiveVector.count();
+        // test set
         long testNegVectorCount = testNegVector.count();
         long testPosVectorCount = testPosVector.count();
+        /**
+         * Since we have more positive vectors than negative vectors
+         * we set the sampling ratio to get a proportionally equal amount
+         * of the positive vectors
+         */
         JavaRDD<JournalFeatureVector> testpositiveVector = positiveVector.sample(false, ((double) filteredVectorCount / (double) positiveVectorCount), 1);
         long testPositiveCount = testpositiveVector.count();
 
