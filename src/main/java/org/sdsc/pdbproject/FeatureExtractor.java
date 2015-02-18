@@ -61,6 +61,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         } catch (Exception e) {
             System.out.println(RDDVect._1());
             e.printStackTrace();
+            return new ArrayList<JournalFeatureVector>();
         }
         // Make a list of lines from the file body
         List<String> Body = Arrays.asList(RDDVect._2().split("\n"));
