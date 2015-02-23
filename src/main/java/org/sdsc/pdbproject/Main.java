@@ -104,8 +104,8 @@ public class Main {
         long filteredVectorCount = negativeVector.count();
         long positiveVectorCount = positiveVector.count();
         // test set
-        long testNegVectorCount = testNegVector.count();
-        long testPosVectorCount = testPosVector.count();
+        //long testNegVectorCount = testNegVector.count();
+        //long testPosVectorCount = testPosVector.count();
 
         /**
          * Since we have more positive vectors than negative vectors
@@ -136,8 +136,8 @@ public class Main {
         System.out.println("Number of negative vectors: " + filteredVectorCount);
         //System.out.println("Number of filtered positive vectors: " + testPositiveCount);
         System.out.println("Number of positive vectors: " + positiveVectorCount);
-        System.out.println("Number of test negative vectors: " + testNegVectorCount);
-        System.out.println("Number of test positive vectors: " + testPosVectorCount);
+        //System.out.println("Number of test negative vectors: " + testNegVectorCount);
+        //System.out.println("Number of test positive vectors: " + testPosVectorCount);
         System.out.println("Hello World!");
 
 
