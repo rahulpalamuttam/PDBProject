@@ -1,6 +1,5 @@
 package org.sdsc.pdbproject;
 
-
 /**
  * Apache Libraries.
  * Spark Java programming APIs. It contains the
@@ -67,9 +66,9 @@ public class Main {
                 .setMaster("local")
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
                 .set("spark.storage.memoryFraction", "0.75")
-                .set("spark.executor.memory", "7g")
-                .set("spark.driver.memory", "5g")
-                .set("spark.driver.maxResultSize", "2g");
+                .set("spark.executor.memory", "25g")
+                .set("spark.driver.memory", "20g")
+                .set("spark.driver.maxResultSize", "20g");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         // Create and Broadcast the HashTable of unreleased ID's
@@ -107,6 +106,7 @@ public class Main {
         // test set
         long testNegVectorCount = testNegVector.count();
         long testPosVectorCount = testPosVector.count();
+
         /**
          * Since we have more positive vectors than negative vectors
          * we set the sampling ratio to get a proportionally equal amount
@@ -199,6 +199,4 @@ public class Main {
             return context;
         }
     }
-
-
 }
