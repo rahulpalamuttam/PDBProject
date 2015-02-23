@@ -80,7 +80,6 @@ public class Main {
 
         // Loads the text files with RDD<filename, text>
         JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet)
-                .sample(false, 0.5, 1)
                 .repartition(100);
 
         // test set - this set does not include the training set - achieved by the subtract function
@@ -95,6 +94,8 @@ public class Main {
         // extracts the training negative and positive vectors
         JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
         JavaRDD<JournalFeatureVector> positiveVector = fileVector.filter(new PositiveFilter());
+        JavaRDD<String> negativeLines = negativeVector.map(new ContextExtractor()).repartition(1);
+        JavaRDD<String> positiveLines = positiveVector.map(new ContextExtractor()).repartition(1);
         // extracts the test negative and positive vectors
         JavaRDD<JournalFeatureVector> testNegVector = testVector.filter(new NegativeFilter());
         JavaRDD<JournalFeatureVector> testPosVector = testVector.filter(new PositiveFilter());
@@ -111,11 +112,11 @@ public class Main {
          * we set the sampling ratio to get a proportionally equal amount
          * of the positive vectors
          */
-        JavaRDD<JournalFeatureVector> testpositiveVector = positiveVector.sample(false, ((double) filteredVectorCount / (double) positiveVectorCount), 1);
-        long testPositiveCount = testpositiveVector.count();
+        //JavaRDD<JournalFeatureVector> testpositiveVector = positiveVector.sample(false, ((double) filteredVectorCount / (double) positiveVectorCount), 1);
+        //long testPositiveCount = testpositiveVector.count();
 
 
-        MLClassifier mlClassifier = new MLClassifier(testpositiveVector, negativeVector, testPosVector, testNegVector);
+        //MLClassifier mlClassifier = new MLClassifier(testpositiveVector, negativeVector, testPosVector, testNegVector);
 
 
         // number of files
@@ -124,14 +125,16 @@ public class Main {
         long vectorLinesCount = fileVector.count();
         int numOfPartitions = fileVector.partitions().size();
 
-        mlClassifier.Run();
+        //mlClassifier.Run();
         //complete.saveAsTextFile("csvfile");
+        negativeLines.saveAsTextFile("NegativeLines.txt");
+        positiveLines.saveAsTextFile("PositiveLines.txt");
         System.out.println("Free Memory:" + runtime.maxMemory() / (1024 * 1024));
         System.out.println("Number of files: " + wholeFileCount);
         System.out.println("Number of line vectors: " + vectorLinesCount);
         System.out.println("Number of partitions: " + numOfPartitions);
         System.out.println("Number of negative vectors: " + filteredVectorCount);
-        System.out.println("Number of filtered positive vectors: " + testPositiveCount);
+        //System.out.println("Number of filtered positive vectors: " + testPositiveCount);
         System.out.println("Number of positive vectors: " + positiveVectorCount);
         System.out.println("Number of test negative vectors: " + testNegVectorCount);
         System.out.println("Number of test positive vectors: " + testPosVectorCount);
@@ -184,6 +187,16 @@ public class Main {
             // otherwise just check if all found ID's are positive
             return vect.getPositiveIdList().size() > 0 &&
                     vect.getNegativeIdList().size() == 0;
+        }
+    }
+
+    /**
+     * public static class
+     */
+    public static class ContextExtractor implements Function<JournalFeatureVector, String> {
+        public String call(JournalFeatureVector vect) {
+            String context = vect.getContext();
+            return context;
         }
     }
 
