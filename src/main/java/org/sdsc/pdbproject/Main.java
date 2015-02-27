@@ -31,6 +31,9 @@ import org.apache.spark.api.java.function.*;
  * Library for broadcasting objects to nodes
  */
 import org.apache.spark.broadcast.*;
+import org.apache.spark.rdd.SequenceFileRDDFunctions;
+import scala.Tuple2;
+import scala.Tuple4;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -63,8 +66,8 @@ public class Main {
         // The default 2 line structure for spark programs
         SparkConf conf = new SparkConf()
                 .setAppName("pdbproject")
-                .setMaster("local")
-                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+                        //.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+                .setMaster(args[2])
                 .set("spark.storage.memoryFraction", "0.75")
                 .set("spark.executor.memory", "25g")
                 .set("spark.driver.memory", "20g")
@@ -78,21 +81,27 @@ public class Main {
         Broadcast<PdbHashTable> varBroad = sc.broadcast(HashTable);
 
         // Loads the text files with RDD<filename, text>
-        JavaPairRDD<String, String> wholeFile = sc.wholeTextFiles(dataSet)
-                .repartition(100);
+        JavaPairRDD<String, String> wholeFile = sc.objectFile(args[1]).mapToPair(new PairFunction<Object, String, String>() {
+            @Override
+            public Tuple2<String, String> call(Object o) throws Exception {
+                return (Tuple2<String, String>) o;
+            }
+        }).repartition(250);
+
 
         // test set - this set does not include the training set - achieved by the subtract function
-        JavaPairRDD<String, String> testFile = sc.wholeTextFiles(dataSet)
-                .subtract(wholeFile)
-                .repartition(100);
+        //JavaPairRDD<String, String> testFile = sc.wholeTextFiles(dataSet)
+        //        .subtract(wholeFile)
+        //        .repartition(100);
 
         // Transforms the basic PairRDD<filename, body> to a JavaRDD<Vector{filename,ID,context}>
-        JavaRDD<JournalFeatureVector> fileVector = wholeFile.flatMap(new FeatureExtractor(varBroad));
+        JavaRDD<JournalFeatureVector> wholeFileVector = wholeFile.flatMap(new FeatureExtractor(varBroad));
+        JavaRDD<JournalFeatureVector> trainingVector = wholeFileVector.sample(false, 0.5, (long) 5);
         // test vector
-        JavaRDD<JournalFeatureVector> testVector = testFile.flatMap(new FeatureExtractor(varBroad));
+        JavaRDD<JournalFeatureVector> testVector = wholeFileVector.subtract(trainingVector);
         // extracts the training negative and positive vectors
-        JavaRDD<JournalFeatureVector> negativeVector = fileVector.filter(new NegativeFilter());
-        JavaRDD<JournalFeatureVector> positiveVector = fileVector.filter(new PositiveFilter());
+        JavaRDD<JournalFeatureVector> negativeVector = trainingVector.filter(new NegativeFilter());
+        JavaRDD<JournalFeatureVector> positiveVector = trainingVector.filter(new PositiveFilter());
         JavaRDD<String> negativeLines = negativeVector.map(new ContextExtractor()).repartition(1);
         JavaRDD<String> positiveLines = positiveVector.map(new ContextExtractor()).repartition(1);
         // extracts the test negative and positive vectors
@@ -104,28 +113,28 @@ public class Main {
         long filteredVectorCount = negativeVector.count();
         long positiveVectorCount = positiveVector.count();
         // test set
-        //long testNegVectorCount = testNegVector.count();
-        //long testPosVectorCount = testPosVector.count();
+        long testNegVectorCount = testNegVector.count();
+        long testPosVectorCount = testPosVector.count();
 
         /**
          * Since we have more positive vectors than negative vectors
          * we set the sampling ratio to get a proportionally equal amount
          * of the positive vectors
          */
-        //JavaRDD<JournalFeatureVector> testpositiveVector = positiveVector.sample(false, ((double) filteredVectorCount / (double) positiveVectorCount), 1);
-        //long testPositiveCount = testpositiveVector.count();
+        JavaRDD<JournalFeatureVector> testpositiveVector = positiveVector.sample(false, ((double) filteredVectorCount / (double) positiveVectorCount), 1);
+        long testPositiveCount = testpositiveVector.count();
 
 
-        //MLClassifier mlClassifier = new MLClassifier(testpositiveVector, negativeVector, testPosVector, testNegVector);
+        MLClassifier mlClassifier = new MLClassifier(testpositiveVector, negativeVector, testPosVector, testNegVector);
 
 
         // number of files
         long wholeFileCount = wholeFile.count();
         // number of lines and parititons;
-        long vectorLinesCount = fileVector.count();
-        int numOfPartitions = fileVector.partitions().size();
+        long vectorLinesCount = trainingVector.count();
+        int numOfPartitions = trainingVector.partitions().size();
 
-        //mlClassifier.Run();
+        mlClassifier.Run();
         //complete.saveAsTextFile("csvfile");
         negativeLines.saveAsTextFile("NegativeLines.txt");
         positiveLines.saveAsTextFile("PositiveLines.txt");
@@ -134,10 +143,10 @@ public class Main {
         System.out.println("Number of line vectors: " + vectorLinesCount);
         System.out.println("Number of partitions: " + numOfPartitions);
         System.out.println("Number of negative vectors: " + filteredVectorCount);
-        //System.out.println("Number of filtered positive vectors: " + testPositiveCount);
+        System.out.println("Number of filtered positive vectors: " + testPositiveCount);
         System.out.println("Number of positive vectors: " + positiveVectorCount);
-        //System.out.println("Number of test negative vectors: " + testNegVectorCount);
-        //System.out.println("Number of test positive vectors: " + testPosVectorCount);
+        System.out.println("Number of test negative vectors: " + testNegVectorCount);
+        System.out.println("Number of test positive vectors: " + testPosVectorCount);
         System.out.println("Hello World!");
 
 
@@ -193,10 +202,20 @@ public class Main {
     /**
      * public static class
      */
+    public static class wholeContextExtractor implements Function<JournalFeatureVector, Tuple4<String, String, String, String>> {
+        public Tuple4 call(JournalFeatureVector vect) {
+            String context = vect.getContext();
+            String negativeList = vect.getNegativeIdList().toString();
+            String positiveList = vect.getPositiveIdList().toString();
+            String fileName = vect.getFileName();
+            Tuple4<String, String, String, String> ret = new Tuple4<>(fileName, negativeList, positiveList, context);
+            return ret;
+        }
+    }
+
     public static class ContextExtractor implements Function<JournalFeatureVector, String> {
         public String call(JournalFeatureVector vect) {
-            String context = vect.getContext();
-            return context;
+            return vect.getContext();
         }
     }
 }

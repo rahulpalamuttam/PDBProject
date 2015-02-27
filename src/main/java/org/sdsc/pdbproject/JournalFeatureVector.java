@@ -40,6 +40,9 @@ public class JournalFeatureVector implements Serializable {
         return this;
     }
 
+    public String getFileName() {
+        return this.FileName;
+    }
     public ArrayList<String> getNegativeIdList() {
         return NegativeIdList;
     }

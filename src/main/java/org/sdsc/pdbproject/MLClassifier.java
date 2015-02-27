@@ -7,6 +7,7 @@ import org.apache.spark.mllib.classification.NaiveBayes;
 import org.apache.spark.mllib.classification.NaiveBayesModel;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.classification.SVMWithSGD;
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.feature.HashingTF;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import scala.Tuple2;
@@ -132,23 +133,36 @@ public class MLClassifier implements Serializable {
      */
     public void SVMRun(JavaRDD<LabeledPoint> training, JavaRDD<LabeledPoint> test) {
         // Run training algorithm to build the model.
-        int numIterations = 1;
+        int numIterations = 50;
         final SVMModel model = SVMWithSGD.train(training.rdd(), numIterations);
 
         // Clear the default threshold.
         model.clearThreshold();
         System.out.println(model.predict(test.first().features()));
-        JavaRDD<Tuple2<Double, Double>> predictionAndLabel = test.map(
-                new Function<LabeledPoint, Tuple2<Double, Double>>() {
-                    public Tuple2<Double, Double> call(LabeledPoint p) {
-                        Double score = (model.predict(p.features()) < 0) ? 0.0 : 1.0;
-                        return new Tuple2<Double, Double>(score, p.label());
+        JavaRDD<Tuple2<Object, Object>> predictionAndLabel = test.map(
+                new Function<LabeledPoint, Tuple2<Object, Object>>() {
+                    public Tuple2<Object, Object> call(LabeledPoint p) {
+                        Double score = model.predict(p.features());
+                        return new Tuple2<Object, Object>(score, p.label());
                     }
                 }
         );
 
+        JavaRDD<Tuple2<Double, Double>> decisionAndLabel = predictionAndLabel.map(new Function<Tuple2<Object, Object>, Tuple2<Double, Double>>() {
+            @Override
+            public Tuple2<Double, Double> call(Tuple2<Object, Object> objectObjectTuple2) throws Exception {
+                Double score = ((Double) objectObjectTuple2._1()) > 0 ? 1.0 : 0.0;
+                return new Tuple2<Double, Double>(score, (Double) objectObjectTuple2._2());
+            }
+        });
+
+        BinaryClassificationMetrics metrics =
+                new BinaryClassificationMetrics(JavaRDD.toRDD(predictionAndLabel));
+        double auROC = metrics.areaUnderROC();
+
+
         // predicts the accuracy of the classifier
-        Double accuracy = predictionAndLabel.filter(new Function<Tuple2<Double, Double>, Boolean>() {
+        Double accuracy = decisionAndLabel.filter(new Function<Tuple2<Double, Double>, Boolean>() {
             public Boolean call(Tuple2<Double, Double> pl) {
                 return pl._1().equals(pl._2());
             }
@@ -163,6 +177,7 @@ public class MLClassifier implements Serializable {
         System.out.println("total : " + totalCount);
 
         System.out.println("The SVM classifier was this accurate: " + accuracy);
+        System.out.println("Area under ROC = " + auROC);
     }
 
     /**

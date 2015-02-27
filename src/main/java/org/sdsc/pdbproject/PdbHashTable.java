@@ -1,5 +1,7 @@
 package org.sdsc.pdbproject;
 
+import com.esotericsoftware.kryo.KryoSerializable;
+
 import java.lang.StringBuffer;
 import java.util.ArrayList;
 import java.io.Serializable;
@@ -180,7 +182,7 @@ public class PdbHashTable implements Serializable {
     /**
      * Private class to eliminate compiler warnings using generics
      */
-    private class PdbIdList extends ArrayList<PdbId> {
+    private class PdbIdList extends ArrayList<PdbId> implements Serializable {
         /**
          * Overrides the contains function of ArrayList.
          * Compares PdbId strings

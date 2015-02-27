@@ -4,6 +4,7 @@ package org.sdsc.pdbproject;
  * java  libraries
  */
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.regex.*;
 import java.text.DateFormat;
@@ -25,7 +26,7 @@ import scala.Tuple2;
  * @param JournalFeatureVector  the output of the Mapper
  * @author Rahul Palamuttam
  */
-public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>, JournalFeatureVector> {
+public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>, JournalFeatureVector>, Serializable {
     private Broadcast<PdbHashTable> HashVar;
 
     /**
@@ -48,7 +49,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      * The call function describes what the Map task needs to do.
      * The function extracts data from the text and creates feature
      * vectors for each line of text.
-     *
+     * TODO :: We need to do something when the date can't be parsed
      * @param RDDVect A two tuple of <File name, File body>
      * @return Iterable structure of feature vectors
      */
@@ -59,8 +60,6 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
         try {
             date = DateParse(RDDVect._1());
         } catch (Exception e) {
-            System.out.println(RDDVect._1());
-            e.printStackTrace();
             return new ArrayList<JournalFeatureVector>();
         }
         // Make a list of lines from the file body
@@ -80,7 +79,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
             vect[i] = new JournalFeatureVector()
                     .setRCSBnum(RCSB_PDB_num)
                     .setP_D_B(P_D_B_)
-                    .setFileName(RDDVect._1)
+                    .setFileName(RDDVect._1())
                     .setContext(Body.get(i))
                     .setNegativeIdList(NegativeList)
                     .setPositiveIdList(PositiveList);
@@ -93,7 +92,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
     /**
      * Parses the String for the Date regular expression found in Article Names.
      * Example : _2008_Jun_1_
-     *
+     * TODO: There are quite a few dates that cannot be parsed
      * @param String to parse
      * @return the date object
      */
@@ -141,7 +140,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      */
     public Tuple2<ArrayList<String>, ArrayList<String>> Extractor(String line, Date date) {
 
-        Pattern pattern = Pattern.compile("[1-9][a-zA-Z0-9]{3}");
+        Pattern pattern = Pattern.compile("([1-9][a-z0-9]{3})|([1-9][A-Z0-9]{3})");
         Matcher matcher = pattern.matcher(line);
         Set<String> matches = new HashSet<String>();
         // records all the matching sequences in the line
