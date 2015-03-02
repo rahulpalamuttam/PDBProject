@@ -10,6 +10,13 @@ import java.util.regex.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 /**
+ * Stanford parsing library
+ */
+import edu.stanford.nlp.util.CoreMap;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.pipeline.Annotation;
+/**
  * Spark Programming Libraries
  */
 import org.apache.spark.api.java.function.*;
@@ -28,6 +35,7 @@ import scala.Tuple2;
  */
 public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>, JournalFeatureVector>, Serializable {
     private Broadcast<PdbHashTable> HashVar;
+    private Broadcast<StanfordCoreNLP> StanfordCoreVar;
 
     /**
      * Instantiates a new Feature extractor.
@@ -41,8 +49,9 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
      *
      * @param BroadcastHash the broadcasted hashtable
      */
-    public FeatureExtractor(Broadcast<PdbHashTable> BroadcastHash) {
+    public FeatureExtractor(Broadcast<PdbHashTable> BroadcastHash, Broadcast<StanfordCoreNLP> StanfCore) {
         HashVar = BroadcastHash;
+        StanfordCoreVar = StanfCore;
     }
 
     /**
@@ -63,7 +72,7 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
             return new ArrayList<JournalFeatureVector>();
         }
         // Make a list of lines from the file body
-        List<String> Body = Arrays.asList(RDDVect._2().split("\n"));
+        List<String> Body = SplitIntoSentences(RDDVect._2());
         //Extract some features from the entire file
         int RCSB_PDB_num = RCSB_PDB_Counter(RDDVect._2());
         int P_D_B_ = Protein_Data_Bank_Counter(RDDVect._2());
@@ -195,5 +204,30 @@ public class FeatureExtractor implements FlatMapFunction<Tuple2<String, String>,
             numOfOccurrences++;
         }
         return numOfOccurrences;
+    }
+
+    /**
+     * Takes in a string body and returns the sentences in the body.
+     *
+     * @param body
+     * @return
+     */
+    public List<String> SplitIntoSentences(String body) {
+        //StanfordCoreNLP pipeline = StanfordCoreVar.value();
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize, ssplit, cleanxml");
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+        Annotation annotation = new Annotation(body);
+        pipeline.annotate(annotation);
+        //    pipeline.xmlPrint(annotation, xmlOut);
+        // An Annotation is a Map and you can get and use the // various analyses individually. For instance, this
+        // gets the parse tree of the 1st sentence in the text.
+        List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
+        ArrayList<String> result = new ArrayList<>();
+        if (sentences != null)
+            for (CoreMap sentence : sentences) {
+                result.add(sentence.toString());
+            }
+        return result;
     }
 }

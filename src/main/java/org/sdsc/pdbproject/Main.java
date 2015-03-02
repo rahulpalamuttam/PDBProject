@@ -7,6 +7,7 @@ package org.sdsc.pdbproject;
  * StorageLevels and SparkContext for java.
  */
 
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import org.apache.spark.api.java.*;
 
 /**
@@ -39,6 +40,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 /**
@@ -77,9 +79,13 @@ public class Main {
         // Create and Broadcast the HashTable of unreleased ID's
         // I make sure to check if the serialized object is saved as a file
         PdbHashTable HashTable = PdbIdSourceDownloader.getPdbHashTable();
+        // stanford Sentence parser initializatio and broadcast
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize, ssplit, cleanxml");
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
         Broadcast<PdbHashTable> varBroad = sc.broadcast(HashTable);
-
+        //Broadcast<StanfordCoreNLP> StanfordNLP = sc.broadcast(pipeline);
         // Loads the text files with RDD<filename, text>
         JavaPairRDD<String, String> wholeFile = sc.objectFile(args[1]).mapToPair(new PairFunction<Object, String, String>() {
             @Override
@@ -95,7 +101,7 @@ public class Main {
         //        .repartition(100);
 
         // Transforms the basic PairRDD<filename, body> to a JavaRDD<Vector{filename,ID,context}>
-        JavaRDD<JournalFeatureVector> wholeFileVector = wholeFile.flatMap(new FeatureExtractor(varBroad));
+        JavaRDD<JournalFeatureVector> wholeFileVector = wholeFile.flatMap(new FeatureExtractor(varBroad, null));
         JavaRDD<JournalFeatureVector> trainingVector = wholeFileVector.sample(false, 0.5, (long) 5);
         // test vector
         JavaRDD<JournalFeatureVector> testVector = wholeFileVector.subtract(trainingVector);
